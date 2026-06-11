@@ -1,41 +1,21 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-// Pages
-import Home from './pages/Home';
-import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
-import Shop from './pages/shop/Shop';
-import ProductDetail from './pages/shop/ProductDetail';
-import TryOn from './pages/tryon/TryOn';
-import Cart from './pages/account/Cart';
-import Orders from './pages/account/Orders';
-
-// Layout
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
-import Footer from './components/layout/Footer';
+import Home from './pages/Home';
+import TryOn from './pages/tryon/TryOn';
+import ProductDetail from './pages/product/ProductDetail';
+import Checkout from './pages/checkout/Checkout';
 
-function App() {
+export default function App() {
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen bg-gray-50">
-        <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/shop/:id" element={<ProductDetail />} />
-            <Route path="/tryon/:id" element={<TryOn />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/orders" element={<Orders />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route path="/"        element={<Home />} />
+        <Route path="/cabine"  element={<TryOn />} />
+        <Route path="/produit" element={<ProductDetail />} />
+        <Route path="/paiement" element={<Checkout />} />
+        {/* Routes Yannick : /catalogue /auth /compte /commandes /admin */}
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
