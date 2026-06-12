@@ -1,373 +1,301 @@
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { products, productImages } from '../services/productService';
 
-const PRODUCTS = [
-  { id:1, emoji:'👗', name:'Robe Évasée Florale',   brand:'Collection Printemps', price:'15 000', badge:'Nouveau', badgeType:'new', bg:'linear-gradient(160deg,#f5f0e8,#ede5d8)',   colors:['#c9a96e','#c4573a','#2d2420'] },
-  { id:2, emoji:'🧥', name:'Veste Structurée',       brand:'Élégance Moderne',     price:'19 500', old:'25 000',   bg:'linear-gradient(160deg,#e8e0d5,#d8cfc0)',   colors:['#2d2420','#7a8c6e'] },
-  { id:3, emoji:'👕', name:'Chemise Lin Premium',    brand:'Casual Chic',          price:'9 800',  badge:'-20%',   bg:'linear-gradient(160deg,#dce8e0,#c8ddd2)',   colors:['#7a8c6e','#f5f0e8','#c4573a'] },
-  { id:4, emoji:'👔', name:'Ensemble Tailleur',      brand:'Business Style',       price:'32 000', badge:'Nouveau', badgeType:'new', bg:'linear-gradient(160deg,#e8dce0,#d8c8cc)', colors:['#1a1410','#c9a96e'] },
-];
-
-const STATS = [
-  { num:'2', sup:'K+', label:'Articles disponibles' },
-  { num:'98', sup:'%', label:'Satisfaction clients' },
-  { num:'3', sup:'s', label:'Temps d\'essayage moyen' },
-];
-
-const IA_FEATURES = [
-  { icon:'🎯', title:'Précision 3D', desc:'33 points du corps détectés en temps réel' },
-  { icon:'⚡', title:'Temps réel',   desc:'Rendu instantané sans délai de chargement' },
-  { icon:'🧠', title:'IA adaptative', desc:'Apprentissage de vos préférences de style' },
-  { icon:'🌍', title:'Mode africaine', desc:'Catalogue wax et tissus traditionnels inclus' },
-];
+/* ── Tokens exacts de la maquette ── */
+const T = {
+  ink: '#1A1A1A',
+  cream: '#F9F9F9',
+  warm: '#F1F5F9',
+  white: '#FFFFFF',
+  red: '#C0392B',
+  redDark: '#8E241D',
+  blue: '#5B7FA6',
+  blueDark: '#355C86',
+  blueNavy: '#26384D',
+  blueLight: '#E6EEF6',
+  muted: '#6A6F78',
+  border: 'rgba(26,26,26,0.105)',
+};
 
 export default function Home() {
-  const navigate = useNavigate();
-
+  const featured = products.slice(0, 4);
   return (
-    <div style={{ paddingTop: 64 }}>
+    <div style={{ paddingTop: '72px' }}>
 
       {/* ── HERO ── */}
       <section style={{
-        display: 'grid', gridTemplateColumns: '1fr 1fr',
-        minHeight: 'calc(100vh - 64px)', overflow: 'hidden',
+        minHeight: 'calc(100vh - 72px)',
+        display: 'grid', gridTemplateColumns: '1fr 1fr', overflow: 'hidden',
       }}>
-        {/* Texte */}
         <div style={{
           display: 'flex', flexDirection: 'column', justifyContent: 'center',
-          padding: '92px 72px 84px 86px', background: '#F9F9F9',
+          padding: '80px 64px 80px 80px', background: T.cream,
         }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'rgba(47,83,120,.10)', color: '#2F5378',
-            border: '1px solid rgba(47,83,120,.18)',
-            fontSize: 11, fontWeight: 500, letterSpacing: 2,
-            textTransform: 'uppercase', padding: '6px 14px', borderRadius: 100,
-            width: 'fit-content', marginBottom: 32,
+          {/* Tag */}
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            background: 'rgba(91,127,166,0.12)', color: T.blueNavy,
+            border: '1px solid rgba(91,127,166,0.18)',
+            fontSize: '11px', fontWeight: 500, letterSpacing: '2px',
+            textTransform: 'uppercase', padding: '6px 14px', borderRadius: '100px',
+            width: 'fit-content', marginBottom: '32px',
           }}>
-            <span style={{ color: '#B83228' }}>✦</span> Nouvelle expérience mode
-          </div>
+            <span style={{ color: T.red }}>✦</span> Essayage virtuel par IA
+          </span>
 
           <h1 style={{
             fontFamily: "'Cormorant Garamond', serif",
             fontSize: 'clamp(48px,6vw,80px)', fontWeight: 300,
-            lineHeight: 1.05, letterSpacing: '-0.035em',
-            color: '#151515', marginBottom: 24,
+            lineHeight: 1.05, marginBottom: '24px', color: T.ink,
           }}>
-            La mode à votre<br />
-            <em style={{ fontStyle: 'italic', color: '#2F5378' }}>image, virtuelle</em>
+            La mode africaine<br />
+            <em style={{ fontStyle: 'italic', color: T.red }}>réinventée</em><br />
+            pour vous
           </h1>
 
-          <p style={{
-            fontSize: 16, color: '#66707A', maxWidth: 430,
-            lineHeight: 1.8, marginBottom: 48,
-          }}>
-            Essayez des centaines de vêtements sans quitter votre maison. Notre cabine virtuelle utilise l'IA pour adapter chaque pièce à votre morphologie.
+          <p style={{ fontSize: '16px', color: T.muted, maxWidth: '400px', lineHeight: 1.8, marginBottom: '48px' }}>
+            Essayez virtuellement des tenues wax, bogolan et ankara grâce à notre cabine IA. Commandez avec confiance.
           </p>
 
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            <Link to="/catalogue" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 12,
-              background: 'linear-gradient(135deg,#B83228,#8E241D)',
-              color: '#fff', fontSize: 13, fontWeight: 500,
-              letterSpacing: '1.5px', textTransform: 'uppercase',
-              padding: '16px 32px', borderRadius: 'var(--r)',
-              border: 'none', textDecoration: 'none',
-            }}>
-              Explorer la boutique
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <Link to="/tryon" className="btn-primary">
+              Essayer maintenant
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </Link>
-            <Link to="/cabine" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 10,
-              background: 'transparent', color: 'var(--ink)',
-              fontSize: 13, fontWeight: 500, letterSpacing: '1.5px',
-              textTransform: 'uppercase', padding: '15px 30px',
-              borderRadius: 'var(--r)', border: '1.5px solid rgba(26,26,26,.15)',
-              textDecoration: 'none',
-            }}>👗 Essayer maintenant</Link>
+            <Link to="/shop" className="btn-outline">Voir le catalogue</Link>
           </div>
-        </div>
 
-        {/* Visuel avec image background */}
-        <div style={{ position: 'relative', overflow: 'hidden' }}>
+          {/* Stats */}
           <div style={{
-            position: 'absolute', inset: 0,
-            background: `
-              linear-gradient(125deg,rgba(26,26,26,.76),rgba(47,83,120,.38) 47%,rgba(181,48,37,.20)),
-              url("https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1500&q=88") center/cover no-repeat
-            `,
-            filter: 'saturate(.92) contrast(1.05)',
-            transform: 'scale(1.04)',
-          }} />
-          <div style={{
-            position: 'relative', zIndex: 1,
-            width: '100%', height: '100%',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            gap: 12, color: 'rgba(255,255,255,0.15)',
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 120, letterSpacing: -4,
+            display: 'flex', gap: '40px', marginTop: '64px',
+            paddingTop: '40px', borderTop: `1px solid ${T.border}`,
           }}>
-            <span style={{ opacity: .16, color: '#fff', textShadow: '0 30px 80px rgba(0,0,0,.35)' }}>TryOn</span>
-            <span style={{ fontSize: 14, letterSpacing: 1, opacity: .5, textAlign: 'center', padding: '0 40px' }}>
-              Application de mode africaine et cabine d'essayage virtuelle
-            </span>
-          </div>
-          {/* Badge */}
-          <div style={{
-            position: 'absolute', bottom: 40, left: 40, zIndex: 2,
-            background: 'rgba(250,247,242,0.95)',
-            borderRadius: 18, padding: '16px 20px',
-            display: 'flex', alignItems: 'center', gap: 12,
-            boxShadow: '0 14px 42px rgba(26,26,26,0.13)',
-          }}>
-            <div style={{
-              width: 40, height: 40, background: '#E6EEF6',
-              borderRadius: '50%', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontSize: 18,
-            }}>✨</div>
-            <div style={{ fontSize: 12 }}>
-              <strong style={{ display: 'block', fontSize: 14, fontWeight: 500 }}>IA Essayage</strong>
-              Résultat en 2 secondes
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── STATS ── */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(3,1fr)',
-        maxWidth: 1180, margin: '46px auto 24px',
-        padding: '0 28px', gap: 18,
-      }}>
-        {STATS.map(({ num, sup, label }) => (
-          <div key={label} style={{
-            position: 'relative', overflow: 'hidden',
-            minHeight: 158, border: '1px solid rgba(26,26,26,.10)',
-            borderRadius: 24,
-            background: 'linear-gradient(145deg,rgba(255,255,255,.92),rgba(240,235,226,.78))',
-            boxShadow: '0 16px 40px rgba(26,26,26,.08)',
-            padding: '32px 40px', display: 'flex', flexDirection: 'column', gap: 4,
-            transition: 'transform .28s, box-shadow .28s',
-          }}>
-            <div style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 52, fontWeight: 300, lineHeight: 1, color: 'var(--ink)',
-            }}>
-              {num}<span style={{ color: '#B83228' }}>{sup}</span>
-            </div>
-            <div style={{
-              fontSize: 12, color: '#6d6258',
-              letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600,
-              marginTop: 18,
-            }}>{label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── NOUVEAUTÉS ── */}
-      <section style={{ padding: '80px 80px' }}>
-        <div style={{ marginBottom: 48 }}>
-          <span style={{
-            fontSize: 11, fontWeight: 500, letterSpacing: 2,
-            textTransform: 'uppercase', color: '#355C86',
-            display: 'block', marginBottom: 12,
-          }}>Nouveautés</span>
-          <h2 style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 'clamp(32px,4vw,52px)', fontWeight: 300, lineHeight: 1.1,
-          }}>Pièces <em style={{ fontStyle: 'italic', color: '#B83228' }}>incontournables</em></h2>
-        </div>
-
-        {/* Filtres */}
-        <div style={{ display: 'flex', gap: 12, marginBottom: 40, flexWrap: 'wrap', alignItems: 'center' }}>
-          {['Tout','Femme','Homme','Enfant','Accessoires'].map((f, i) => (
-            <button key={f} style={{
-              padding: '8px 20px', borderRadius: 100,
-              fontSize: 12, fontWeight: 500, letterSpacing: 1, textTransform: 'uppercase',
-              border: `1.5px solid ${i === 0 ? 'var(--ink)' : 'rgba(26,26,26,.11)'}`,
-              background: i === 0 ? 'var(--ink)' : 'transparent',
-              color: i === 0 ? '#F9F9F9' : 'var(--muted)',
-              cursor: 'pointer',
-            }}>{f}</button>
-          ))}
-          <select style={{
-            marginLeft: 'auto', padding: '8px 16px',
-            border: '1.5px solid rgba(26,26,26,.11)', borderRadius: 10,
-            fontFamily: "'DM Sans', sans-serif", fontSize: 13,
-            background: '#fff', cursor: 'pointer', outline: 'none',
-          }}>
-            <option>Popularité</option>
-            <option>Prix croissant</option>
-            <option>Nouveautés</option>
-          </select>
-        </div>
-
-        {/* Grille produits */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24 }}>
-          {PRODUCTS.map(p => (
-            <div key={p.id}
-              onClick={() => navigate('/produit')}
-              style={{
-                borderRadius: 18, overflow: 'hidden', background: '#fff',
-                boxShadow: '0 2px 12px rgba(26,20,16,.06)',
-                transition: 'all .25s', cursor: 'pointer',
-                border: '1px solid rgba(26,26,26,.10)',
-                borderTop: '3px solid rgba(91,127,166,.42)',
-              }}>
-              <div style={{ aspectRatio: '3/4', position: 'relative', background: p.bg }}>
+            {[
+              { val: '2 400+', label: 'Tenues disponibles' },
+              { val: '98%', label: 'Satisfaction client' },
+              { val: '12k+', label: 'Essayages réalisés' },
+            ].map(s => (
+              <div key={s.label}>
                 <div style={{
-                  width: '100%', height: '100%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 72, opacity: .3,
-                }}>{p.emoji}</div>
-
-                {p.badge && (
-                  <span style={{
-                    position: 'absolute', top: 12, left: 12,
-                    background: p.badgeType === 'new' ? 'rgba(91,127,166,.16)' : '#B83228',
-                    color: p.badgeType === 'new' ? '#355C86' : '#fff',
-                    fontSize: 10, fontWeight: 600, letterSpacing: 1,
-                    textTransform: 'uppercase', padding: '4px 10px', borderRadius: 100,
-                  }}>{p.badge}</span>
-                )}
-
-                <button
-                  onClick={e => { e.stopPropagation(); navigate('/cabine'); }}
-                  style={{
-                    position: 'absolute', bottom: 12, right: 12,
-                    background: 'rgba(250,247,242,.95)', border: 'none', cursor: 'pointer',
-                    padding: '8px 14px', borderRadius: 100,
-                    fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase',
-                    color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 6,
-                  }}>✨ Essayer</button>
-              </div>
-              <div style={{ padding: '16px 18px' }}>
-                <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{p.name}</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>{p.brand}</div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 600 }}>
-                    {p.old && <span style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'line-through', marginRight: 6 }}>{p.old}</span>}
-                    {p.price} <small style={{ fontSize: 12, fontWeight: 300 }}>FCFA</small>
-                  </div>
-                  <div style={{ display: 'flex', gap: 4 }}>
-                    {p.colors.map((c, j) => (
-                      <div key={j} style={{
-                        width: 14, height: 14, borderRadius: '50%', background: c,
-                        border: j === 0 ? '2px solid var(--ink)' : '2px solid transparent',
-                      }} />
-                    ))}
-                  </div>
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: '36px', fontWeight: 600, color: T.red, lineHeight: 1,
+                }}>
+                  <span>{s.val}</span>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── SECTION IA ── */}
-      <section style={{
-        background: 'var(--ink)', margin: 0, padding: 80, color: 'var(--cream)',
-      }}>
-        <div style={{
-          maxWidth: 1000, margin: '0 auto',
-          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center',
-        }}>
-          <div>
-            <span style={{
-              fontSize: 11, letterSpacing: 2, textTransform: 'uppercase',
-              color: '#355C86', display: 'block', marginBottom: 16,
-            }}>Technologie IA</span>
-            <h2 style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 48, fontWeight: 300, lineHeight: 1.1, marginBottom: 24,
-            }}>
-              Essayage <em style={{ fontStyle: 'italic', color: '#E6EEF6' }}>intelligent</em><br />
-              en temps réel
-            </h2>
-            <p style={{
-              color: 'rgba(255,255,255,0.6)', fontSize: 15, lineHeight: 1.8, marginBottom: 32,
-            }}>
-              Notre IA analyse votre morphologie via MediaPipe pour superposer chaque vêtement avec une précision millimétrique. Résultat en moins de 3 secondes.
-            </p>
-            <Link to="/cabine" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 12,
-              background: '#355C86', color: 'var(--ink)',
-              fontSize: 13, fontWeight: 500, letterSpacing: '1.5px',
-              textTransform: 'uppercase', padding: '16px 32px',
-              borderRadius: 'var(--r)', textDecoration: 'none', color: '#fff',
-            }}>Essayer la cabine →</Link>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            {IA_FEATURES.map(({ icon, title, desc }, i) => (
-              <div key={title} style={{
-                background: i === 1
-                  ? 'rgba(201,169,110,0.08)' : 'rgba(255,255,255,0.04)',
-                border: `1px solid ${i === 1 ? 'rgba(201,169,110,0.15)' : 'rgba(255,255,255,0.08)'}`,
-                borderRadius: 12, padding: 24,
-              }}>
-                <div style={{ fontSize: 32, marginBottom: 12 }}>{icon}</div>
-                <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 6 }}>{title}</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>{desc}</div>
+                <div style={{ fontSize: '12px', color: T.muted, letterSpacing: '1px', marginTop: '6px' }}>{s.label}</div>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Image hero droite */}
+        <div style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: `url(${productImages[0]})`,
+            backgroundSize: 'cover', backgroundPosition: 'center',
+          }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(135deg, rgba(26,26,26,0.12) 0%, transparent 60%)',
+          }} />
+          {/* Badge IA flottant */}
+          <div style={{
+            position: 'absolute', bottom: '40px', left: '40px',
+            background: 'rgba(250,247,242,0.96)',
+            borderRadius: '18px', padding: '16px 20px',
+            display: 'flex', alignItems: 'center', gap: '12px',
+            boxShadow: '0 18px 50px rgba(26,26,26,0.13)',
+          }}>
+            <div style={{
+              width: '40px', height: '40px', background: T.blueLight,
+              borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '18px',
+            }}>✨</div>
+            <div>
+              <div style={{ fontSize: '11px', color: T.muted, letterSpacing: '1.5px', textTransform: 'uppercase' }}>Score IA</div>
+              <div style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: '28px', fontWeight: 600, color: T.red, lineHeight: 1,
+              }}>94%</div>
+              <div style={{ fontSize: '11px', color: T.muted, marginTop: '2px' }}>Compatibilité morphologique</div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* ── FOOTER ── */}
-      <footer style={{
-        background: 'linear-gradient(180deg,#1A1A1A,#26384D)',
-        color: 'rgba(255,255,255,0.45)',
-        padding: '64px 80px 36px',
-      }}>
-        <div style={{
-          display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 48,
-        }}>
-          <div>
-            <div style={{
-              fontFamily: "'Cormorant Garamond', serif", fontSize: 32, fontWeight: 600,
-              color: '#fff', letterSpacing: 4, marginBottom: 16,
-            }}>
-              TryOn<span style={{ color: '#C0392B' }}>.</span>
-            </div>
-            <p style={{ fontSize: 13, lineHeight: 1.9, maxWidth: 260 }}>
-              Plateforme e-commerce de mode avec essayage virtuel IA. Créée par les stylistes CFPD-ISGD, Douala, Cameroun.
-            </p>
+      {/* ── CATÉGORIES ── */}
+      <section style={{ padding: '96px 80px', background: T.cream }}>
+        <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '3px', textTransform: 'uppercase', color: T.blueDark, marginBottom: '12px' }}>
+            Collections
           </div>
+          <h2 style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 'clamp(32px,4vw,52px)', fontWeight: 300, color: T.ink,
+          }}>
+            Explorez nos <em style={{ fontStyle: 'italic', color: T.red }}>catégories</em>
+          </h2>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '20px' }}>
           {[
-            ['Boutique', ['Femme', 'Homme', 'Enfant', 'Accessoires', 'Nouveautés']],
-            ['Aide', ['Livraison', 'Retours', 'Tailles', 'Contact', 'FAQ']],
-            ['Paiement', ['Orange Money', 'MTN MoMo', 'Visa / MasterCard', 'PayDunya']],
-          ].map(([title, items]) => (
-            <div key={title}>
-              <div style={{
-                fontSize: 11, fontWeight: 600, letterSpacing: 2,
-                textTransform: 'uppercase', color: 'rgba(255,255,255,.6)',
-                marginBottom: 20,
-              }}>{title}</div>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {items.map(item => (
-                  <li key={item}>
-                    <a href="#" style={{
-                      fontSize: 13, color: 'rgba(255,255,255,.35)',
-                      textDecoration: 'none', transition: 'color .2s',
-                    }}>{item}</a>
-                  </li>
-                ))}
-              </ul>
+            { label: 'Femme', sub: '840 articles', img: productImages[0] },
+            { label: 'Homme', sub: '620 articles', img: productImages[3] },
+            { label: 'Enfant', sub: '310 articles', img: productImages[6] },
+            { label: 'Accessoires', sub: '180 articles', img: productImages[7] },
+          ].map((cat, i) => (
+            <Link to="/shop" key={i} style={{ textDecoration: 'none' }}>
+              <div style={{ position: 'relative', borderRadius: '18px', overflow: 'hidden', height: '320px', cursor: 'pointer', transition: 'transform .3s ease, box-shadow .3s ease' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 20px 50px rgba(26,26,26,0.15)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}>
+                <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${cat.img})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,26,26,0.75) 0%, transparent 55%)' }} />
+                <div style={{ position: 'absolute', bottom: '24px', left: '24px' }}>
+                  <div style={{ color: '#fff', fontSize: '20px', fontFamily: "'Cormorant Garamond', serif", fontWeight: 600 }}>{cat.label}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', marginTop: '4px' }}>{cat.sub}</div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── PRODUITS VEDETTES ── */}
+      <section style={{ padding: '96px 80px', background: T.warm }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '48px' }}>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '3px', textTransform: 'uppercase', color: T.blueDark, marginBottom: '8px' }}>Sélection</div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 300, color: T.ink }}>
+              Produits <em style={{ fontStyle: 'italic', color: T.red }}>vedettes</em>
+            </h2>
+          </div>
+          <Link to="/shop" style={{ fontSize: '13px', color: T.blueDark, textDecoration: 'none', fontWeight: 600, letterSpacing: '1px' }}>
+            Voir tout →
+          </Link>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '24px' }}>
+          {featured.map((p, i) => <ProductCard key={p.id} product={p} img={productImages[i]} />)}
+        </div>
+      </section>
+
+      {/* ── BANNIÈRE IA ── */}
+      <section style={{
+        margin: '0 80px 96px',
+        background: 'linear-gradient(180deg, #1A1A1A 0%, #26384D 100%)',
+        borderRadius: '28px', padding: '80px',
+        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'center',
+      }}>
+        <div>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            background: 'rgba(192,57,43,0.24)', color: '#f5b7b1',
+            fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase',
+            padding: '6px 14px', borderRadius: '100px', marginBottom: '28px',
+          }}>✦ Technologie IA</span>
+          <h2 style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 'clamp(32px,4vw,52px)', fontWeight: 300,
+            color: T.cream, lineHeight: 1.1, marginBottom: '20px',
+          }}>
+            Votre cabine d'essayage<br />
+            <em style={{ fontStyle: 'italic', color: '#f5b7b1' }}>virtuelle</em>
+          </h2>
+          <p style={{ color: 'rgba(249,249,249,0.65)', lineHeight: 1.8, marginBottom: '36px', maxWidth: '380px' }}>
+            Uploadez votre photo, notre IA analyse votre morphologie et vous propose les tailles et coupes les plus adaptées.
+          </p>
+          <Link to="/tryon" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '10px',
+            background: 'linear-gradient(135deg, #C0392B, #8E241D)',
+            color: '#fff', fontSize: '13px', fontWeight: 500,
+            letterSpacing: '1.5px', textTransform: 'uppercase',
+            padding: '16px 32px', borderRadius: '10px', textDecoration: 'none',
+            boxShadow: '0 14px 28px rgba(192,57,43,0.25)',
+          }}>Essayer gratuitement →</Link>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {[
+            { n: '01', t: 'Uploadez votre photo', d: 'Une photo de face en tenue ajustée suffit.' },
+            { n: '02', t: 'Analyse morphologique', d: 'Notre IA détecte vos mesures en quelques secondes.' },
+            { n: '03', t: 'Score de compatibilité', d: "Chaque vêtement reçoit un score d'adéquation." },
+            { n: '04', t: 'Commandez en confiance', d: 'Ajustements de taille inclus automatiquement.' },
+          ].map(s => (
+            <div key={s.n} style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+              <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '28px', fontWeight: 600, color: T.red, lineHeight: 1, minWidth: '40px' }}>{s.n}</span>
+              <div>
+                <div style={{ color: T.cream, fontWeight: 500, marginBottom: '4px' }}>{s.t}</div>
+                <div style={{ color: 'rgba(249,249,249,0.55)', fontSize: '13px', lineHeight: 1.6 }}>{s.d}</div>
+              </div>
             </div>
           ))}
         </div>
-        <div style={{
-          display: 'flex', justifyContent: 'space-between',
-          paddingTop: 24, borderTop: '1px solid rgba(255,255,255,.07)', fontSize: 11,
-        }}>
-          <span>© 2025 TryOn · CFPD-ISGD Cameroun</span>
-          <span>Mentions légales · Confidentialité · CGV</span>
-        </div>
-      </footer>
+      </section>
+
     </div>
+  );
+}
+
+function ProductCard({ product, img }) {
+  const [hovered, setHovered] = React.useState(false);
+  const T = { red: '#C0392B', blueDark: '#355C86', blue: '#5B7FA6', blueLight: '#E6EEF6', blueNavy: '#26384D', ink: '#1A1A1A', muted: '#6A6F78', border: 'rgba(26,26,26,0.105)' };
+  return (
+    <Link to={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+      <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
+        borderRadius: '14px', overflow: 'hidden', background: '#fff',
+        border: `1px solid ${hovered ? 'rgba(91,127,166,0.32)' : T.border}`,
+        boxShadow: hovered ? '0 22px 52px rgba(26,26,26,0.13)' : '0 12px 34px rgba(26,26,26,0.075)',
+        transition: 'all .3s ease',
+        transform: hovered ? 'translateY(-4px)' : 'none',
+      }}>
+        <div style={{ position: 'relative', height: '280px', overflow: 'hidden' }}>
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: `url(${img})`,
+            backgroundSize: 'cover', backgroundPosition: 'center',
+            background: hovered ? 'linear-gradient(145deg,#F8F9FB,#E9EFF6)' : undefined,
+            transition: 'transform .4s ease',
+            transform: hovered ? 'scale(1.05)' : 'scale(1)',
+          }} />
+          {product.tag && (
+            <span style={{
+              position: 'absolute', top: '14px', left: '14px',
+              background: product.tag === 'Nouveau' ? 'rgba(91,127,166,0.14)' : T.red,
+              color: product.tag === 'Nouveau' ? T.blueDark : '#fff',
+              fontSize: '10px', fontWeight: 600, letterSpacing: '1px',
+              padding: '4px 10px', borderRadius: '100px',
+            }}>{product.tag}</span>
+          )}
+          {hovered && (
+            <Link to="/tryon" onClick={e => e.stopPropagation()} style={{
+              position: 'absolute', bottom: '14px', left: '50%', transform: 'translateX(-50%)',
+              background: T.blueLight, color: T.blueNavy,
+              fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase',
+              padding: '10px 20px', borderRadius: '100px', textDecoration: 'none', whiteSpace: 'nowrap',
+              boxShadow: '0 4px 16px rgba(26,26,26,0.12)',
+            }}>Essayer virtuellement</Link>
+          )}
+        </div>
+        <div style={{ padding: '16px 18px 20px' }}>
+          <div style={{ fontSize: '11px', color: T.blueDark, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '4px', fontWeight: 500 }}>{product.brand}</div>
+          <div style={{ fontSize: '15px', fontWeight: 500, color: T.ink, marginBottom: '12px' }}>{product.name}</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              {product.old && <span style={{ fontSize: '12px', color: T.muted, textDecoration: 'line-through', marginRight: '8px' }}>{product.old.toLocaleString()} FCFA</span>}
+              <span style={{ fontSize: '15px', fontWeight: 600, color: T.ink }}>{product.price.toLocaleString()} <small style={{ fontSize: '11px', fontWeight: 400 }}>FCFA</small></span>
+            </div>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              {product.colors.slice(0, 3).map((c, i) => (
+                <div key={i} style={{
+                  width: '12px', height: '12px', borderRadius: '50%', background: c,
+                  outline: i === 0 ? `2px solid ${T.blueDark}` : 'none',
+                  outlineOffset: '2px',
+                  border: '1.5px solid rgba(26,26,26,0.15)',
+                }} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
