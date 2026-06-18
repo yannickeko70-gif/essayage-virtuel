@@ -33,16 +33,24 @@ frontend/
 ├── public/                 # Static assets (HTML, icons, manifest)
 ├── src/                    # Source code
 │   ├── components/         # Reusable UI components
-│   │   └── layout/         # Layout components (Navbar, Footer)
-│   ├── context/            # React Context providers (CartContext)
+│   │   ├── layout/         # Layout components (Navbar, Footer)
+│   │   ├── shop/           # Shop-related components (FilterSidebar, ProductCard, SearchBar)
+│   │   └── tryon/          # Try-on specific components (currently empty)
+│   ├── context/            # React Context providers (CartContext, AuthContext)
 │   ├── hooks/              # Custom React hooks (currently empty)
 │   ├── pages/              # Page components mapped to routes
 │   │   ├── checkout/       # Checkout page
 │   │   ├── product/        # Product detail page
-│   │   └── tryon/          # Virtual try-on page (core feature)
+│   │   ├── tryon/          # Virtual try-on page (core feature)
+│   │   ├── account/        # User account pages (Orders)
+│   │   ├── admin/          # Admin pages (Dashboard)
+│   │   ├── auth/           # Authentication pages (Auth)
+│   │   ├── cart/           # Cart page
+│   │   └── shop/           # Shop overview page
 │   ├── services/           # API services and mock data
 │   │   ├── api.js          # HTTP client wrapper
-│   │   └── productService.js # Mock product data and helpers
+│   │   ├── productService.js # Mock product data and helpers
+│   │   └── authService.js  # Authentication service
 │   ├── App.js              # Main application component with routing
 │   ├── index.js            # Application entry point
 │   ├── index.css           # Global styles
@@ -56,9 +64,10 @@ frontend/
 ### Key Architectural Patterns
 
 #### State Management
-- Uses React Context API for global state (`CartContext`)
-- Context provides cart items and manipulation functions (addItem, removeItem, updateQty, clearCart)
-- Consumed via `useCart()` hook in components that need cart data
+- Uses React Context API for global state (`CartContext` and `AuthContext`)
+- `CartContext` provides cart items and manipulation functions (addItem, removeItem, updateQty, clearCart)
+- `AuthContext` provides authentication state (user, login, logout, etc.)
+- Consumed via `useCart()` and `useAuth()` hooks in components that need context data
 - Local component state managed with `useState` for UI-specific state (form inputs, toggles)
 
 #### Routing
@@ -78,8 +87,10 @@ frontend/
 #### Data Flow
 - Mock product data in `services/productService.js`
 - Simple API wrapper in `services/api.js` for future backend integration
+- Authentication service in `services/authService.js`
 - Product data imported directly where needed (no global product state)
-- Cart state is the primary global state managed via Context
+- Cart state is the primary global state managed via `CartContext`
+- Auth state managed via `AuthContext`
 - Form data handled locally with `useState` and submitted via context functions
 
 #### Virtual Try-On Feature (Core Application Feature)
@@ -98,29 +109,32 @@ frontend/
 - Layout: Shared UI structures (`src/components/layout/`)
 - Context: Global state providers (`src/context/`)
 - Services: Data access and API utilities (`src/services/`)
-- Reusable components would go in `src/components/` (beyond layout)
+- Reusable components would go in `src/components/` (beyond layout, shop, tryon)
 
 ### Important Files to Understand First
 
 1. **src/App.js** - Main application layout, routing, and route definitions
 2. **src/context/CartContext.jsx** - Global cart state management
-3. **src/index.js** - Application entry point and root rendering
-4. **src/services/productService.js** - Mock product data and helper functions
-5. **src/pages/Home.jsx** - Home page showing implementation patterns
-6. **src/pages/tryon/TryOn.jsx** - Virtual try-on page (core feature implementation)
-7. **src/pages/product/ProductDetail.jsx** - Detailed product page with form handling
-8. **tailwind.config.js** - Styling configuration and theme extension
-9. **package.json** - Dependencies and available scripts
+3. **src/context/AuthContext.jsx** - Authentication state management
+4. **src/index.js** - Application entry point and root rendering
+5. **src/services/productService.js** - Mock product data and helper functions
+6. **src/services/authService.js** - Authentication service (login/logout helpers)
+7. **src/pages/Home.jsx** - Home page showing implementation patterns
+8. **src/pages/tryon/TryOn.jsx** - Virtual try-on page (core feature implementation)
+9. **src/pages/product/ProductDetail.jsx** - Detailed product page with form handling
+10. **tailwind.config.js** - Styling configuration and theme extension
+11. **package.json** - Dependencies and available scripts
 
 ### Development Guidelines
 
 #### Adding New Features
 1. For new pages: Create component in `src/pages/` and add route in `App.js`
-2. For shared components: Create in `src/components/` with appropriate subfolder
-3. For global state: Extend `CartContext` or create new context in `src/context/`
+2. For shared components: Create in `src/components/` with appropriate subfolder (layout, shop, tryon, etc.)
+3. For global state: Extend existing Contexts (`CartContext`, `AuthContext`) or create new context in `src/context/`
 4. For data fetching: Extend `services/api.js` or create new service files
 5. For styling: Use Tailwind utility classes or add to `tailwind.config.js` if needed
 6. For virtual try-on features: Follow the pattern in `src/pages/tryon/TryOn.jsx`
+7. For authentication features: Follow the pattern in `src/pages/auth/Auth.jsx` and `src/services/authService.js`
 
 #### Testing
 - Tests located alongside source files with `.test.js` suffix
