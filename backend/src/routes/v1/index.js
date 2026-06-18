@@ -4,6 +4,7 @@ const router = express.Router();
 
 const authRoutes = require("./auth");
 const cartRoutes = require("./cart");
+const orderRoutes = require("./order");
 
 router.get("/", (req, res) => {
   res.json({
@@ -14,5 +15,6 @@ router.get("/", (req, res) => {
 
 router.use("/auth", authRoutes);
 router.use("/cart", cartRoutes);
+router.use("/orders", orderRoutes);
 
 module.exports = router;
