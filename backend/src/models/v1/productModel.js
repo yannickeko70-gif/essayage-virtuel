@@ -5,7 +5,8 @@ async function findAll(filters = {}) {
     SELECT
       p.*,
       c.name as categoryName,
-      c.slug as categorySlug
+      c.slug as categorySlug,
+      (SELECT imageUrl FROM product_images WHERE productId = p.id AND isMain = 1 LIMIT 1) AS image
     FROM products p
     LEFT JOIN categories c ON p.categoryId = c.id
     WHERE p.status = 'active'

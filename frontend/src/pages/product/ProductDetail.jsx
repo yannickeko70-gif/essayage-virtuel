@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
-import { api } from "../../services/api";
+import { getProductById } from "../../services/productService";
 
 const ALL_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 const VIEW_ICONS = ['📷', '🔍', '📐', '✨'];
@@ -20,7 +20,7 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const { addItem } = useCart();
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Using mock data - synchronous loading
 
   const [activeThumb, setActiveThumb] = useState(0);
   const [selectedColor, setSelectedColor] = useState("#1a1410");
@@ -30,8 +30,25 @@ export default function ProductDetail() {
   useEffect(() => {
     async function loadProduct() {
       try {
-        const response = await api.get(`/products/${id}`);
-        const p = response.data;
+        // const response = await api.get(`/products/${id}`); // DISABLED: Using mock data
+        const productData = getProductById(id);
+        if (!productData) {
+          setProduct(null);
+          return;
+        }
+        // Transform mock data to match expected API shape
+        const p = {
+          ...productData,
+          description: productData.description || "Description not available",
+          color: productData.colors && productData.colors.length > 0
+            ? productData.colors[0]
+            : "#1a1410",
+          image: `/product-${productData.id}.jpg`,
+          imageUrl: `/product-${productData.id}-alt.jpg`,
+          mainImage: `/product-${productData.id}-main.jpg`,
+          images: [{ imageUrl: `/product-${productData.id}-gallery.jpg` }]
+        };
+        // const p = response.data; // DISABLED: Using mock data instead
 
 const formattedProduct = {
   id: p.id,
@@ -249,7 +266,7 @@ setSelectedSize(formattedProduct.sizes[0]);
           </div>
 
           {/* Boutons */}
-          <button type="button" onClick={() => navigate('/tryon')} style={{
+          <button type="button" onClick={() => navigate(`/tryon?productId=${product.id}`)} style={{
             width:'100%', padding:18, borderRadius:10,
             background:'linear-gradient(135deg,#355C86,#26384D)',
             color:'#F9F9F9', border:'none', cursor:'pointer',
