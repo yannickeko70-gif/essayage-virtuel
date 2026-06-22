@@ -93,6 +93,11 @@ export default function TryOn() {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
 
+  // ── États IA (à ajouter avec les autres useState) ──
+const [aiGenerating, setAiGenerating] = useState(false);
+const [aiResult, setAiResult]         = useState(null);
+const [aiError, setAiError]           = useState(null);
+
   // États de la cabine
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -430,6 +435,64 @@ export default function TryOn() {
     setMeasurements(null);
     stopWebcam();
   };
+
+/* ── Génération IA (version corrigée) ── */
+const handleAITryon = async () => {
+  if (!photo && !photoPreview) return;
+  if (!product) return;
+
+  setAiGenerating(true);
+  setAiResult(null);
+  setAiError(null);
+
+  try {
+    const formData = new FormData();
+    formData.append('productId', product.id);
+
+    // Attacher la photo selon son type
+    if (photo instanceof File) {
+      formData.append('tryonPhoto', photo);
+    } else if (photoPreview && photoPreview.startsWith('data:')) {
+      // Photo webcam (dataURL canvas) → convertir en Blob
+      const blob = await fetch(photoPreview).then(r => r.blob());
+      formData.append('tryonPhoto', blob, 'webcam-capture.jpg');
+    } else if (photoPreview) {
+      const blob = await fetch(photoPreview).then(r => r.blob());
+      formData.append('tryonPhoto', blob, 'photo.jpg');
+    }
+
+    if (score)           formData.append('score', String(score));
+    if (recommendedSize) formData.append('recommendedSize', recommendedSize);
+
+    // ✅ FIX 1 : le token est dans sessionStorage avec la clé "tryon_token"
+    const token = sessionStorage.getItem('tryon_token');
+
+    // ✅ FIX 2 : BASE_URL inclut déjà /v1, donc endpoint sans préfixe /v1
+    const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
+
+    const response = await fetch(`${BASE_URL}/tryons/ai-generate`, {
+      method: 'POST',
+      headers: {
+        // ✅ PAS de Content-Type ici ! Le navigateur le calcule seul avec le boundary multipart
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || data.success === false) {
+      throw new Error(data.message || 'Erreur inconnue');
+    }
+
+    setAiResult(data.data);
+  } catch (err) {
+    console.error('[handleAITryon]', err);
+    setAiError(err.message);
+  } finally {
+    setAiGenerating(false);
+  }
+};
 
   // Nettoyage des ressources
   useEffect(() => {
@@ -1224,6 +1287,147 @@ export default function TryOn() {
                     </div>
                   </div>
                 </div>
+
+                {/* ── Section génération IA ── */}
+<div style={{ padding: '24px', borderBottom: `1px solid ${T.border}` }}>
+  <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: T.muted, marginBottom: '16px' }}>
+    Essayage IA
+  </div>
+
+  {/* Bouton principal */}
+  {!aiResult && !aiGenerating && (
+    <button
+      onClick={handleAITryon}
+      style={{
+        width: '100%',
+        padding: '16px',
+        borderRadius: '12px',
+        background: `linear-gradient(135deg, ${T.blue}, ${T.blueNavy})`,
+        color: '#fff',
+        border: 'none',
+        fontSize: '13px',
+        fontWeight: 600,
+        letterSpacing: '1.5px',
+        textTransform: 'uppercase',
+        cursor: 'pointer',
+        boxShadow: '0 10px 24px rgba(53,92,134,0.25)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px',
+      }}
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      Générer avec l'IA
+    </button>
+  )}
+
+  {/* Loading */}
+  {aiGenerating && (
+    <div style={{ textAlign: 'center', padding: '24px 0' }}>
+      <div style={{
+        width: '48px', height: '48px', borderRadius: '50%',
+        border: `3px solid ${T.blueLight}`,
+        borderTop: `3px solid ${T.blueDark}`,
+        margin: '0 auto 16px',
+        animation: 'spin 1s linear infinite',
+      }} />
+      <p style={{ color: T.muted, fontSize: '13px', margin: 0 }}>
+        L'IA génère votre essayage…
+      </p>
+      <p style={{ color: T.blueDark, fontSize: '11px', marginTop: '6px', fontWeight: 500 }}>
+        Analyse morphologique → description du vêtement → rendu final
+      </p>
+      <p style={{ color: T.muted, fontSize: '11px', marginTop: '4px' }}>
+        ~30 à 60 secondes
+      </p>
+    </div>
+  )}
+
+  {/* Erreur */}
+  {aiError && !aiGenerating && (
+    <div style={{
+      padding: '14px 16px',
+      borderRadius: '10px',
+      background: 'rgba(192,57,43,0.07)',
+      border: `1px solid rgba(192,57,43,0.2)`,
+      marginBottom: '12px',
+    }}>
+      <p style={{ color: T.red, fontSize: '13px', margin: '0 0 8px', fontWeight: 500 }}>
+        ⚠ Génération échouée
+      </p>
+      <p style={{ color: T.muted, fontSize: '12px', margin: 0 }}>{aiError}</p>
+      <button
+        onClick={handleAITryon}
+        style={{ marginTop: '10px', background: 'transparent', border: `1px solid ${T.red}`, color: T.red, borderRadius: '8px', padding: '6px 14px', fontSize: '12px', cursor: 'pointer' }}
+      >
+        Réessayer
+      </button>
+    </div>
+  )}
+
+  {/* Résultat */}
+  {aiResult && !aiGenerating && (
+    <div>
+      <div style={{
+        borderRadius: '14px',
+        overflow: 'hidden',
+        marginBottom: '14px',
+        position: 'relative',
+        border: `1px solid ${T.border}`,
+      }}>
+        {/* Badge IA */}
+        <div style={{
+          position: 'absolute', top: '12px', left: '12px', zIndex: 2,
+          background: `linear-gradient(135deg, ${T.blue}, ${T.blueNavy})`,
+          color: '#fff', borderRadius: '100px', padding: '4px 12px',
+          fontSize: '10px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase',
+        }}>
+          ✦ Rendu IA
+        </div>
+        <img
+          src={`${(process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1').replace(/\/api(\/v1)?/, '')}${aiResult.resultImageUrl}`}
+          alt="Essayage IA"
+          style={{ width: '100%', display: 'block', maxHeight: '380px', objectFit: 'cover' }}
+          onError={(e) => { e.target.src = photoPreview; }}
+        />
+      </div>
+
+      {/* Comparaison côte à côte */}
+      {photoPreview && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
+          <div>
+            <p style={{ fontSize: '10px', color: T.muted, textAlign: 'center', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Original</p>
+            <img src={photoPreview} alt="photo originale" style={{ width: '100%', borderRadius: '8px', objectFit: 'cover', height: '120px' }} />
+          </div>
+          <div>
+            <p style={{ fontSize: '10px', color: T.blueDark, textAlign: 'center', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Avec le vêtement</p>
+            <img
+              src={`${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${aiResult.resultImageUrl}`}
+              alt="Essayage IA"
+              style={{ width: '100%', borderRadius: '8px', objectFit: 'cover', height: '120px' }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Regénérer */}
+      <button
+        onClick={handleAITryon}
+        style={{
+          width: '100%', padding: '10px',
+          borderRadius: '8px', background: 'transparent',
+          color: T.blueDark, border: `1px solid ${T.border}`,
+          fontSize: '12px', cursor: 'pointer',
+        }}
+      >
+        ↻ Regénérer
+      </button>
+    </div>
+  )}
+</div>
 
                 {/* Actions */}
                 <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
