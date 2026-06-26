@@ -9,18 +9,14 @@ export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isDropdownOpen && event.target.closest('.user-dropdown') === null) {
         setIsDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isDropdownOpen]);
 
   const isActive = (path) => location.pathname === path;
@@ -35,12 +31,8 @@ export default function Navbar() {
       </Link>
 
       <div className="header-pages clean-header-links">
-        <Link to="/" className={`header-page-btn ${isActive('/') ? 'active' : ''}`}>
-          Accueil
-        </Link>
-        <Link to="/catalogue" className={`header-page-btn ${isActive('/catalogue') ? 'active' : ''}`}>
-          Catalogue
-        </Link>
+        <Link to="/" className={`header-page-btn ${isActive('/') ? 'active' : ''}`}>Accueil</Link>
+        <Link to="/catalogue" className={`header-page-btn ${isActive('/catalogue') ? 'active' : ''}`}>Catalogue</Link>
       </div>
 
       <div className="nav-icons header-actions">
@@ -51,51 +43,48 @@ export default function Navbar() {
               aria-label="Compte utilisateur"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              {user?.prenom ? (
-                <span>{user.prenom.charAt(0)}</span>
-              ) : (
-                <span>👤</span>
-              )}
+              {user?.firstName ? <span>{user.firstName.charAt(0).toUpperCase()}</span> : <span>👤</span>}
             </button>
 
-            {/* Dropdown menu */}
             {isDropdownOpen && (
-              <div className="user-dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50">
-                <div className="px-4 py-2">
-                  <Link
-                    to="/profile"
-                    className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                  >
-                    Mon profil
-                  </Link>
-                  <Link
-                    to="/orders"
-                    className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                  >
-                    Mes commandes
-                  </Link>
-                  {/* Add more links as needed */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      logout();
-                      setIsDropdownOpen(false);
-                      window.location.href = "/";
-                    }}
-                    className="block w-full text-left py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Se déconnecter
-                  </button>
+              <div className="user-dropdown-menu">
+                <div className="user-dropdown-header">
+                  <div className="user-dropdown-avatar">
+                    {(user?.firstName || '?').charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="user-dropdown-name">{user?.firstName} {user?.lastName}</div>
+                    <div className="user-dropdown-email">{user?.email}</div>
+                  </div>
                 </div>
+
+                <div className="user-dropdown-links">
+                  <Link to="/profile" className="user-dropdown-link" onClick={() => setIsDropdownOpen(false)}>
+                    <span className="user-dropdown-link-icon">👤</span> Mon profil
+                  </Link>
+                  <Link to="/orders" className="user-dropdown-link" onClick={() => setIsDropdownOpen(false)}>
+                    <span className="user-dropdown-link-icon">📦</span> Mes commandes
+                  </Link>
+                </div>
+
+                <button
+                  className="user-dropdown-logout"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    logout();
+                    setIsDropdownOpen(false);
+                    window.location.href = "/";
+                  }}
+                >
+                  <span className="user-dropdown-link-icon">↪</span> Se déconnecter
+                </button>
               </div>
             )}
           </div>
         ) : (
-          <Link to="/auth" className="header-icon-btn">
-            <span>👤</span>
-          </Link>
+          <Link to="/auth" className="header-icon-btn"><span>👤</span></Link>
         )}
-        {/* Panier toujours visible */}
+
         <Link to="/cart" className="header-icon-btn" style={{ position: 'relative' }}>
           <span>🛒</span>
           {count > 0 && <span className="cart-badge">{count}</span>}
