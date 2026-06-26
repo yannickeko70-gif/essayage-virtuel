@@ -289,6 +289,27 @@ const IA_STEP_DESCRIPTION_STYLE = {
 const DEFAULT_HERO_IMAGE = '/hero-default.jpg';
 const DEFAULT_CATEGORY_IMAGE = '/category-placeholder.jpg';
 
+
+function ImageWithFallback({ src, alt = '', label = 'TryOn', style = {} }) {
+  const [error, setError] = useState(false);
+  const fallback = `data:image/svg+xml;utf8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800">
+       <rect width="100%" height="100%" fill="#EEF3F8"/>
+       <text x="50%" y="50%" font-family="DM Sans, sans-serif" font-size="20"
+             fill="#6A6F78" text-anchor="middle" dominant-baseline="middle">${label}</text>
+     </svg>`
+  )}`;
+
+  return (
+    <img
+      src={error || !src ? fallback : src}
+      alt={alt}
+      onError={() => setError(true)}
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', ...style }}
+    />
+  );
+}
+
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -445,16 +466,7 @@ export default function Home() {
 
         {/* Image hero droite */}
         <div style={{ position: 'relative', overflow: 'hidden' }} aria-hidden="true">
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: `url(${DEFAULT_HERO_IMAGE})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-            aria-hidden="true"
-          />
+<ImageWithFallback src={DEFAULT_HERO_IMAGE} alt="" label="TryOn" />
           <div
             style={{
               position: 'absolute',
@@ -566,16 +578,7 @@ export default function Home() {
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      backgroundImage: `url(${DEFAULT_CATEGORY_IMAGE})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                    }}
-                    aria-hidden="true"
-                  />
+                <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${DEFAULT_CATEGORY_IMAGE})`, backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
                   <div
                     style={{
                       position: 'absolute',
@@ -711,19 +714,12 @@ function ProductCard({ product }) {
             overflow: 'hidden',
           }}
         >
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: `url(${product.image})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              background: hovered ? 'linear-gradient(145deg,#F8F9FB,#E9EFF6)' : undefined,
-              transition: 'transform .4s ease',
-              transform: hovered ? 'scale(1.05)' : 'scale(1)',
-            }}
-            aria-hidden="true"
-          />
+        <ImageWithFallback
+          src={product.image}
+          alt={product.name}
+          label={product.brand || product.name}
+          style={{ transform: hovered ? 'scale(1.05)' : 'scale(1)', transition: 'transform .4s ease' }}
+        />
           {product.tag && (
             <span
               style={{

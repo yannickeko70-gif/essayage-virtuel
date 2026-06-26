@@ -114,32 +114,6 @@ async function clearResetToken(userId) {
   );
 }
 
-async function findAllClients() {
-  const [rows] = await db.query(`
-    SELECT
-      u.id,
-      u.firstName,
-      u.lastName,
-      u.email,
-      u.role,
-      u.phone,
-      u.address,
-      u.city,
-      u.createdAt,
-      COUNT(DISTINCT o.id) AS orders,
-      COUNT(DISTINCT t.id) AS tryons,
-      COALESCE(SUM(CASE WHEN o.status != 'cancelled' THEN o.total ELSE 0 END), 0) AS totalSpent
-    FROM users u
-    LEFT JOIN orders o ON o.userId = u.id
-    LEFT JOIN tryons t ON t.userId = u.id
-    WHERE u.role = 'client'
-    GROUP BY u.id
-    ORDER BY u.createdAt DESC
-  `);
-
-  return rows;
-}
-
 module.exports = {
   findByEmail,
   findById,
@@ -150,5 +124,4 @@ module.exports = {
   findByResetToken,
   updatePassword,
   clearResetToken,
-  findAllClients,
 };

@@ -2,7 +2,7 @@ const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1"
 const FILES_BASE_URL = BASE_URL.replace(/\/api(\/v1)?\/?$/, "");
 
 export function getImageUrl(path) {
-  if (!path) return "/product-placeholder.jpg";
+  if (!path) return null; // null => le composant ImageWithFallback affichera le placeholder
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
   return `${FILES_BASE_URL}${path}`;
 }
@@ -54,32 +54,6 @@ export const api = {
     apiRequest(endpoint, {
       method: "DELETE",
     }),
-
-  upload: (endpoint, formData) => {
-    const token =
-      sessionStorage.getItem("tryon_token") ||
-      localStorage.getItem("tryon_token");
-
-    const headers = {};
-
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    return fetch(`${BASE_URL}${endpoint}`, {
-      method: "POST",
-      headers,
-      body: formData,
-    }).then(async (res) => {
-      const data = await res.json();
-
-      if (!res.ok || data.success === false) {
-        throw new Error(data.message || "Erreur API");
-      }
-
-      return data;
-    });
-  },
 };
 
 export default api;
