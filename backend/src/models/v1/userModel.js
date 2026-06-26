@@ -12,7 +12,7 @@ async function findByEmail(email) {
 async function findById(id) {
   const [rows] = await db.query(
     `
-    SELECT id, firstName, lastName, email, role, phone, address, city, createdAt
+    SELECT id, firstName, lastName, email, role, phone, address, city, status, createdAt
     FROM users
     WHERE id = ?
     LIMIT 1
@@ -114,18 +114,6 @@ async function clearResetToken(userId) {
   );
 }
 
-async function updateProfile(userId, data) {
-  const [result] = await db.query(
-    `
-    UPDATE users
-    SET firstName = ?, lastName = ?, phone = ?, email = ?
-    WHERE id = ?
-    `,
-    [data.firstName, data.lastName, data.phone || null, data.email, userId]
-  );
-  return result.affectedRows > 0;
-}
-
 module.exports = {
   findByEmail,
   findById,
@@ -136,5 +124,4 @@ module.exports = {
   findByResetToken,
   updatePassword,
   clearResetToken,
-  updateProfile,
 };

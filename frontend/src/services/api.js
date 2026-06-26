@@ -8,7 +8,9 @@ export function getImageUrl(path) {
 }
 
 export async function apiRequest(endpoint, options = {}) {
-  const token = sessionStorage.getItem("tryon_token");
+  const token =
+  sessionStorage.getItem("tryon_token") ||
+  localStorage.getItem("tryon_token");
 
   const headers = {
     "Content-Type": "application/json",
@@ -35,9 +37,23 @@ export async function apiRequest(endpoint, options = {}) {
 
 export const api = {
   get: (endpoint) => apiRequest(endpoint),
-  post: (endpoint, data) => apiRequest(endpoint, { method: "POST", body: JSON.stringify(data) }),
-  put: (endpoint, data) => apiRequest(endpoint, { method: "PUT", body: JSON.stringify(data) }),
-  delete: (endpoint) => apiRequest(endpoint, { method: "DELETE" }),
+
+  post: (endpoint, data) =>
+    apiRequest(endpoint, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  put: (endpoint, data) =>
+    apiRequest(endpoint, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  delete: (endpoint) =>
+    apiRequest(endpoint, {
+      method: "DELETE",
+    }),
 };
 
 export default api;
