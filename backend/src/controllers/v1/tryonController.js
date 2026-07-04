@@ -414,7 +414,7 @@ async function aiGenerateTryon(req, res) {
         isLatest:        true,
       };
       try {
-        const tryonId = await tryonModel.createTryon(tryonData);
+        const tryonId = await tryonModel.create(tryonData);
         tryon = await tryonModel.findById(tryonId);
       } catch (dbErr) {
         console.warn('[aiGenerateTryon] Sauvegarde DB non bloquante :', dbErr.message);
