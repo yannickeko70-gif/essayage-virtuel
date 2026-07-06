@@ -19,6 +19,8 @@ import Returns from "./pages/returns/Returns";
 import PrivacyPolicy from "./pages/privacy-policy/PrivacyPolicy";
 import TermsConditions from "./pages/terms/TermsConditions";
 import './index.css';
+import Notifications from "./pages/account/Notifications";
+import HelpCenter from "./pages/account/HelpCenter";
 
 // ✅ Composant séparé DANS le Router pour pouvoir utiliser useLocation
 function AppLayout() {
@@ -48,6 +50,8 @@ function AppLayout() {
           <Route path="/cart"     element={<ProtectedRoute><Cart /></ProtectedRoute>} />
           <Route path="/orders"   element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           <Route path="/profile"  element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+          <Route path="/help-center" element={<ProtectedRoute><HelpCenter /></ProtectedRoute>} />
           <Route path="/admin"    element={<ProtectedRoute adminOnly><Dashboard /></ProtectedRoute>} />
 
           <Route path="*" element={<div style={{ paddingTop: 120, textAlign: 'center' }}>Page introuvable</div>} />

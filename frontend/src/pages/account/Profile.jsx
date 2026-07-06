@@ -128,15 +128,43 @@ export default function Profile() {
           boxShadow: '0 8px 32px rgba(26,38,56,0.18)',
         }}>
           {/* Avatar */}
-          <div style={{
-            width: '80px', height: '80px', borderRadius: '50%',
-            background: 'linear-gradient(135deg, #355C86, #5B7FA6)',
-            color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: "'Cormorant Garamond', serif", fontSize: '2rem', fontWeight: 600,
-            margin: '0 auto 1rem',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
-          }}>
-            {initial}
+          <div
+            style={{
+              width: "80px",
+              height: "80px",
+              borderRadius: "50%",
+              overflow: "hidden",
+              margin: "0 auto 1rem",
+              border: "3px solid rgba(255,255,255,0.18)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.28)",
+              background: "linear-gradient(135deg, #355C86, #5B7FA6)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {user?.avatar || user?.picture ? (
+              <img
+                src={user.avatar || user.picture}
+                alt={fullName}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <span
+                style={{
+                  color: "#fff",
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "2rem",
+                  fontWeight: 600,
+                }}
+              >
+                {initial}
+              </span>
+            )}
           </div>
 
           <h2 style={{
@@ -296,12 +324,12 @@ export default function Profile() {
 
         {/* ── PRÉFÉRENCES ── */}
         <Group title="Préférences">
-          <Row icon="🔔" label="Notifications" onClick={() => {}} />
+          <Row icon="🔔" label="Notifications" to="/notifications" />
         </Group>
 
         {/* ── SUPPORT ── */}
         <Group title="Support">
-          <Row icon="❓" label="Centre d'aide" onClick={() => {}} />
+          <Row icon="❓" label="Centre d'aide" to="/help-center" />
           <Row icon="🔒" label="Politique de confidentialité" to="/privacy-policy" />
           <Row icon="📋" label="Conditions générales de vente" to="/terms" />
         </Group>
