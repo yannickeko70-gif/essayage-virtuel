@@ -496,3 +496,19 @@ footer {
   .static-page { padding-top: 126px; }
   .static-main { padding: 2.5rem 1.25rem; }
 }
+
+.navbar-user-photo{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    object-fit:cover;
+    display:block;
+}
+
+.dropdown-user-photo{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    object-fit:cover;
+    display:block;
+}

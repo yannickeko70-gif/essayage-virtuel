@@ -43,14 +43,32 @@ export default function Navbar() {
               aria-label="Compte utilisateur"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              {user?.firstName ? <span>{user.firstName.charAt(0).toUpperCase()}</span> : <span>👤</span>}
+              {user?.avatar || user?.picture ? (
+                <img
+                  src={user.avatar || user.picture}
+                  alt={user.firstName}
+                  className="navbar-user-photo"
+                />
+              ) : user?.firstName ? (
+                <span>{user.firstName.charAt(0).toUpperCase()}</span>
+              ) : (
+                <span>👤</span>
+              )}
             </button>
 
             {isDropdownOpen && (
               <div className="user-dropdown-menu">
                 <div className="user-dropdown-header">
                   <div className="user-dropdown-avatar">
-                    {(user?.firstName || '?').charAt(0).toUpperCase()}
+                    {user?.avatar || user?.picture ? (
+                      <img
+                        src={user.avatar || user.picture}
+                        alt={user.firstName}
+                        className="dropdown-user-photo"
+                      />
+                    ) : (
+                      (user?.firstName || "?").charAt(0).toUpperCase()
+                    )}
                   </div>
                   <div>
                     <div className="user-dropdown-name">{user?.firstName} {user?.lastName}</div>
@@ -93,3 +111,4 @@ export default function Navbar() {
     </nav>
   );
 }
+
