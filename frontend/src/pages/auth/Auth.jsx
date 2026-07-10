@@ -3,8 +3,9 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../services/api";
 import BottomNav from '../../components/layout/BottomNav';
+import MobileHeader from '../../components/layout/MobileHeader';
 import { User, Mail, Phone, Lock, KeyRound, Hash, Eye, EyeOff } from 'lucide-react';
-
+import { FcGoogle } from 'react-icons/fc';
 
 const DATA = {
   login: {
@@ -71,7 +72,6 @@ export default function Auth() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
-  // Gestion des effets secondaires pour le token de réinitialisation et la connexion Google
   useEffect(() => {
     if (token) {
       setResetToken(token);
@@ -79,7 +79,6 @@ export default function Auth() {
     }
   }, [token]);
 
-  // Gestion de la connexion Google après le redirection en passant par le formulaire d'OTP si nécessaire
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const data = params.get("data");
@@ -221,6 +220,7 @@ export default function Auth() {
 
   return (
     <div style={pageStyle} className="auth-page">
+      <MobileHeader />
       <style>{`
         /* ═══════════════════════════════════════
           RESPONSIVE — AUTH
@@ -593,8 +593,10 @@ export default function Auth() {
 
                   <div style={separatorStyle} className="auth-separator">ou continuer avec</div>
 
+                  {/* Connexion avec Google */}
                   <SocialButton onClick={loginWithGoogle} className="auth-social-btn">
-                    🌐 Continuer avec Google
+                    <FcGoogle size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                    Continuer avec Google
                   </SocialButton>
                 </>
               )}

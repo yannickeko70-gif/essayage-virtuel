@@ -1,146 +1,139 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import MobileHeader from '../../components/layout/MobileHeader';
+
+// ─── ICÔNES LUCIDE ───
+import {
+  ChevronLeft,
+  Lock,
+  Shield,
+  Home,
+  Check,
+  Eye,
+  Server,
+  Mail,
+  Phone,
+  MapPin,
+  Cookie,
+  Smartphone,
+  Laptop,
+  Users,
+  Edit,
+  Trash2,
+  AlertTriangle,
+  Download,
+} from 'lucide-react';
 
 export default function PrivacyPolicy() {
+  const navigate = useNavigate();
+
   return (
     <div className="static-page" style={{ paddingTop: '72px', minHeight: '100vh', background: '#F9F9F9' }}>
+      <MobileHeader />
       <style>{`
-        /* ═══════════════════════════════════════
-           RESPONSIVE — PAGES STATIQUES
-        ════════════════════════════════════════ */
-
         @media (max-width: 900px) {
-          .static-hero {
-            padding: 3rem 1.5rem 2.5rem !important;
-          }
-          .static-hero-title {
-            font-size: clamp(1.8rem, 3.5vw, 2.8rem) !important;
-          }
-          .static-main {
-            padding: 2.5rem 1.5rem 2rem !important;
-          }
-          .static-grid-2 {
-            grid-template-columns: 1fr !important;
-          }
-          .static-grid-3 {
-            grid-template-columns: 1fr 1fr !important;
-          }
+          .static-hero { padding: 3rem 1.5rem 2.5rem !important; }
+          .static-hero-title { font-size: clamp(1.8rem, 3.5vw, 2.8rem) !important; }
+          .static-main { padding: 2.5rem 1.5rem 2rem !important; }
+          .static-grid-2 { grid-template-columns: 1fr !important; }
+          .static-grid-3 { grid-template-columns: 1fr 1fr !important; }
+          .static-back-btn { width: 40px !important; height: 40px !important; }
+          .static-back-btn svg { width: 20px !important; height: 20px !important; }
         }
-
         @media (max-width: 640px) {
-          .static-page {
-            padding-top: 0 !important;
-          }
-          .static-hero {
-            padding: 2rem 1rem 1.5rem !important;
-          }
-          .static-hero-title {
-            font-size: 1.6rem !important;
-          }
-          .static-hero-sub {
-            font-size: 0.9rem !important;
-          }
-          .static-main {
-            padding: 1.5rem 1rem 1.5rem !important;
-          }
-          .static-section {
-            margin-bottom: 2rem !important;
-            padding-bottom: 2rem !important;
-          }
-          .static-h2 {
-            font-size: 1.4rem !important;
-            padding-left: 0.75rem !important;
-          }
-          .static-h3 {
-            font-size: 1.1rem !important;
-          }
-          .static-p {
-            font-size: 0.9rem !important;
-          }
-          .static-ul li {
-            font-size: 0.9rem !important;
-          }
-          .static-ol li {
-            font-size: 0.9rem !important;
-          }
-          .static-card {
-            padding: 1.25rem !important;
-          }
-          .static-card-title {
-            font-size: 1.05rem !important;
-          }
-          .static-cta {
-            padding: 3rem 1.5rem !important;
-          }
-          .static-cta-title {
-            font-size: 1.6rem !important;
-          }
-          .static-cta-sub {
-            font-size: 0.9rem !important;
-          }
-          .static-cta-btn {
-            padding: 0.75rem 1.5rem !important;
-            font-size: 11px !important;
-          }
-          .static-grid-3 {
-            grid-template-columns: 1fr !important;
-          }
-          .size-table th,
-          .size-table td {
-            padding: 0.75rem 0.75rem !important;
-            font-size: 0.85rem !important;
-          }
-          .static-note {
-            font-size: 0.8rem !important;
-            padding: 0.75rem 1rem !important;
-          }
+          .static-page { padding-top: 0 !important; }
+          .static-hero { padding: 2rem 1rem 1.5rem !important; }
+          .static-hero-title { font-size: 1.6rem !important; }
+          .static-hero-sub { font-size: 0.9rem !important; }
+          .static-main { padding: 1.5rem 1rem 1.5rem !important; }
+          .static-section { margin-bottom: 2rem !important; padding-bottom: 2rem !important; }
+          .static-h2 { font-size: 1.4rem !important; padding-left: 0.75rem !important; }
+          .static-h3 { font-size: 1.1rem !important; }
+          .static-p { font-size: 0.9rem !important; }
+          .static-ul li { font-size: 0.9rem !important; }
+          .static-card { padding: 1.25rem !important; }
+          .static-card-title { font-size: 1.05rem !important; }
+          .static-cta { padding: 3rem 1.5rem !important; }
+          .static-cta-title { font-size: 1.6rem !important; }
+          .static-cta-sub { font-size: 0.9rem !important; }
+          .static-cta-btn { padding: 0.75rem 1.5rem !important; font-size: 11px !important; }
+          .static-grid-3 { grid-template-columns: 1fr !important; }
+          .static-back-btn { width: 36px !important; height: 36px !important; }
         }
-
         @media (max-width: 420px) {
-          .static-hero {
-            padding: 1.5rem 0.75rem 1.25rem !important;
-          }
-          .static-hero-title {
-            font-size: 1.3rem !important;
-          }
-          .static-main {
-            padding: 1rem 0.75rem 1rem !important;
-          }
-          .static-h2 {
-            font-size: 1.2rem !important;
-          }
-          .static-card {
-            padding: 1rem !important;
-          }
-          .static-cta {
-            padding: 2rem 1rem !important;
-          }
-          .static-cta-title {
-            font-size: 1.3rem !important;
-          }
-          .size-table th,
-          .size-table td {
-            padding: 0.5rem 0.5rem !important;
-            font-size: 0.75rem !important;
-          }
+          .static-hero { padding: 1.5rem 0.75rem 1.25rem !important; }
+          .static-hero-title { font-size: 1.3rem !important; }
+          .static-main { padding: 1rem 0.75rem 1rem !important; }
+          .static-h2 { font-size: 1.2rem !important; }
+          .static-card { padding: 1rem !important; }
+          .static-cta { padding: 2rem 1rem !important; }
+          .static-cta-title { font-size: 1.3rem !important; }
+          .static-back-btn { width: 32px !important; height: 32px !important; }
+        }
+        /* Supprimer les puces par défaut */
+        .static-ul {
+          list-style: none !important;
+          padding: 0 !important;
+        }
+        .static-ul li {
+          list-style: none !important;
+        }
+        .static-ol {
+          list-style: none !important;
+          padding: 0 !important;
+          counter-reset: step-counter;
+        }
+        .static-ol li {
+          list-style: none !important;
+          counter-increment: step-counter;
+        }
+        .static-ol li::before {
+          content: counter(step-counter);
+          min-width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          background: #355C86;
+          color: #fff;
+          font-size: 12px;
+          font-weight: 700;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          margin-right: 12px;
         }
       `}</style>
 
-      {/* Hero */}
       <section className="static-hero" style={{
         background: 'linear-gradient(135deg, #EEF3F8 0%, #DDE8F3 100%)',
         padding: '5rem 2rem 4rem', textAlign: 'center',
-        borderBottom: '1px solid rgba(0,0,0,0.08)'
+        borderBottom: '1px solid rgba(0,0,0,0.08)',
+        position: 'relative'
       }}>
+        <button 
+          className="static-back-btn"
+          onClick={() => navigate(-1)}
+          style={{
+            position: 'absolute', top: '20px', left: '20px',
+            width: '44px', height: '44px', borderRadius: '14px',
+            border: '1px solid rgba(0,0,0,0.08)', background: '#fff',
+            cursor: 'pointer', boxShadow: '0 3px 14px rgba(0,0,0,0.06)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}
+        >
+          <ChevronLeft size={22} strokeWidth={2} />
+        </button>
+
         <div className="static-hero-badge" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '6px',
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
           background: 'rgba(53,92,134,0.09)', color: '#26384D',
           border: '1px solid rgba(53,92,134,0.14)',
           fontSize: '10px', fontWeight: 600, letterSpacing: '2px',
-          textTransform: 'uppercase', padding: '4px 14px',
+          textTransform: 'uppercase', padding: '6px 16px',
           borderRadius: '50px', marginBottom: '1.25rem'
         }}>
-          🔒 Confidentialité
+          <Lock size={14} strokeWidth={2} />
+          Confidentialité
         </div>
         <h1 className="static-hero-title" style={{
           fontFamily: "'Cormorant Garamond', serif",
@@ -159,6 +152,7 @@ export default function PrivacyPolicy() {
       </section>
 
       <main className="static-main" style={{ maxWidth: '900px', margin: '0 auto', padding: '4rem 2rem 3rem' }}>
+        
         {/* Introduction */}
         <section className="static-section" style={{ marginBottom: '3.5rem', paddingBottom: '3.5rem', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <h2 className="static-h2" style={{
@@ -177,6 +171,7 @@ export default function PrivacyPolicy() {
             borderRadius: '10px', borderLeft: '3px solid rgba(53,92,134,0.25)',
             marginTop: '1rem'
           }}>
+            <Shield size={14} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
             En utilisant notre site, vous consentez aux pratiques décrites dans cette politique.
           </div>
         </section>
@@ -188,47 +183,51 @@ export default function PrivacyPolicy() {
             fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
             paddingLeft: '1rem', borderLeft: '3px solid #355C86'
           }}>
+            <Eye size={20} style={{ display: 'inline', marginRight: '10px', verticalAlign: 'middle' }} />
             Informations que Nous Collectons
           </h2>
           <h3 className="static-h3" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.25rem', fontWeight: 600, color: '#1A1A1A', marginBottom: '0.75rem', marginTop: '1rem' }}>
+            <Users size={18} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
             Informations personnelles
           </h3>
           <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               Nom complet, adresse e-mail, numéro de téléphone
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               Adresse de facturation et de livraison
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               Informations de paiement (traitées par nos partenaires sécurisés, non stockées chez nous)
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               Préférences et historiques d'achat
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               Données liées à l'essayage virtuel (photos uploadées, mesures prises)
             </li>
           </ul>
           <h3 className="static-h3" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.25rem', fontWeight: 600, color: '#1A1A1A', marginBottom: '0.75rem', marginTop: '1.5rem' }}>
+            <Server size={18} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
             Informations techniques
           </h3>
           <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               Adresse IP, type de navigateur, système d'exploitation
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               Pages visitées, durée de visite, chemins de navigation
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <Cookie size={14} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }} />
               Cookies et technologies de suivi similaires
             </li>
           </ul>
@@ -245,70 +244,26 @@ export default function PrivacyPolicy() {
           </h2>
           <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               Pour traiter vos commandes et vous fournir nos services
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               Pour personnaliser votre expérience d'achat
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Pour améliorer notre site et nos fonctionnalités (y compris l'essayage virtuel)
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              Pour améliorer notre site et nos fonctionnalités
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Pour vous envoyer des communications liées à votre compte ou des offres (avec votre consentement)
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              Pour vous envoyer des communications liées à votre compte
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Pour prévenir la fraude et assurer la sécurité de nos transactions
-            </li>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Pour respecter nos obligations légales et réglementaires
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              Pour prévenir la fraude et assurer la sécurité
             </li>
           </ul>
-        </section>
-
-        {/* Partage */}
-        <section className="static-section" style={{ marginBottom: '3.5rem', paddingBottom: '3.5rem', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-          <h2 className="static-h2" style={{
-            fontFamily: "'Cormorant Garamond', serif", fontSize: '1.75rem',
-            fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
-            paddingLeft: '1rem', borderLeft: '3px solid #355C86'
-          }}>
-            Partage de Vos Informations
-          </h2>
-          <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
-            Nous ne vendons, ni ne louons vos informations personnelles. Nous les partageons uniquement dans les cas suivants :
-          </p>
-          <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Avec nos prestataires nécessaires à l'exécution des services (paiement, livraison, hébergement)
-            </li>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Lorsque la loi l'exige ou pour protéger nos droits légaux
-            </li>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Avec votre consentement explicite
-            </li>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Dans le cadre d'une fusion, acquisition ou vente d'actifs
-            </li>
-          </ul>
-          <div className="static-note" style={{
-            fontSize: '0.875rem', color: '#6A6F78', fontStyle: 'italic',
-            padding: '1rem 1.25rem', background: 'rgba(53,92,134,0.05)',
-            borderRadius: '10px', borderLeft: '3px solid rgba(53,92,134,0.25)',
-            marginTop: '1rem'
-          }}>
-            Nos prestataires sont tenus de protéger vos informations conformément à nos standards de sécurité.
-          </div>
         </section>
 
         {/* Sécurité */}
@@ -318,35 +273,37 @@ export default function PrivacyPolicy() {
             fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
             paddingLeft: '1rem', borderLeft: '3px solid #355C86'
           }}>
+            <Shield size={20} style={{ display: 'inline', marginRight: '10px', verticalAlign: 'middle' }} />
             Sécurité des Données
           </h2>
-          <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
-            Nous mettons en œuvre des mesures de sécurité appropriées :
-          </p>
           <div className="static-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginTop: '1.25rem' }}>
             {[
-              { icon: '🔐', t: 'Chiffrement SSL/TLS', d: 'Pour toutes les transmissions de données' },
-              { icon: '🛡️', t: 'Contrôles d\'accès stricts', d: 'Stockage sécurisé avec accès limité' },
-              { icon: '🔍', t: 'Audits réguliers', d: 'Revue de sécurité périodique de nos systèmes' },
-              { icon: '📚', t: 'Formation du personnel', d: 'Sensibilisation continue à la protection des données' },
-            ].map(c => (
-              <div key={c.t} className="static-card" style={{
-                background: '#fff', borderRadius: '14px', padding: '1.75rem',
-                boxShadow: '0 10px 28px rgba(26,26,26,0.08)',
-                border: '1px solid rgba(0,0,0,0.08)'
-              }}>
-                <div className="static-card-title" style={{
-                  fontFamily: "'Cormorant Garamond', serif", fontSize: '1.2rem',
-                  fontWeight: 600, color: '#1A1A1A', marginBottom: '0.75rem',
-                  display: 'flex', alignItems: 'center', gap: '0.5rem'
+              { icon: Lock, t: 'Chiffrement SSL/TLS', d: 'Pour toutes les transmissions de données' },
+              { icon: Shield, t: 'Contrôles d\'accès stricts', d: 'Stockage sécurisé avec accès limité' },
+              { icon: Eye, t: 'Audits réguliers', d: 'Revue de sécurité périodique de nos systèmes' },
+              { icon: Users, t: 'Formation du personnel', d: 'Sensibilisation continue à la protection des données' },
+            ].map(c => {
+              const Icon = c.icon;
+              return (
+                <div key={c.t} className="static-card" style={{
+                  background: '#fff', borderRadius: '14px', padding: '1.75rem',
+                  boxShadow: '0 10px 28px rgba(26,26,26,0.08)',
+                  border: '1px solid rgba(0,0,0,0.08)'
                 }}>
-                  {c.icon} {c.t}
+                  <div className="static-card-title" style={{
+                    fontFamily: "'Cormorant Garamond', serif", fontSize: '1.2rem',
+                    fontWeight: 600, color: '#1A1A1A', marginBottom: '0.75rem',
+                    display: 'flex', alignItems: 'center', gap: '0.5rem'
+                  }}>
+                    <Icon size={20} strokeWidth={1.8} />
+                    {c.t}
+                  </div>
+                  <p className="static-card-text" style={{ fontSize: '0.9375rem', color: '#6A6F78', lineHeight: '1.65' }}>
+                    {c.d}
+                  </p>
                 </div>
-                <p className="static-card-text" style={{ fontSize: '0.9375rem', color: '#6A6F78', lineHeight: '1.65' }}>
-                  {c.d}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -359,43 +316,23 @@ export default function PrivacyPolicy() {
           }}>
             Vos Droits
           </h2>
-          <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
-            Conformément à la réglementation applicable, vous disposez des droits suivants :
-          </p>
           <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <Eye size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
               Droit d'accès à vos données personnelles
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <Edit size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
               Droit de rectification des données inexactes
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <Trash2 size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
               Droit à l'effacement (« droit à l'oubli »)
             </li>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Droit à la limitation du traitement
-            </li>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Droit d'opposition au traitement
-            </li>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Droit de retirer votre consentement à tout moment
-            </li>
           </ul>
-          <div className="static-note" style={{
-            fontSize: '0.875rem', color: '#6A6F78', fontStyle: 'italic',
-            padding: '1rem 1.25rem', background: 'rgba(53,92,134,0.05)',
-            borderRadius: '10px', borderLeft: '3px solid rgba(53,92,134,0.25)',
-            marginTop: '1rem'
-          }}>
-            Pour exercer ces droits, contactez-nous à l'adresse indiquée ci-dessous.
-          </div>
         </section>
 
         {/* Cookies */}
@@ -405,33 +342,23 @@ export default function PrivacyPolicy() {
             fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
             paddingLeft: '1rem', borderLeft: '3px solid #355C86'
           }}>
+            <Cookie size={20} style={{ display: 'inline', marginRight: '10px', verticalAlign: 'middle' }} />
             Cookies
           </h2>
-          <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
-            Notre site utilise des cookies pour améliorer votre expérience :
-          </p>
           <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               <strong>Essentiels</strong> — nécessaires au fonctionnement du site
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               <strong>Performance</strong> — pour analyser l'utilisation du site
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               <strong>Fonctionnalité</strong> — pour mémoriser vos préférences
             </li>
           </ul>
-          <div className="static-note" style={{
-            fontSize: '0.875rem', color: '#6A6F78', fontStyle: 'italic',
-            padding: '1rem 1.25rem', background: 'rgba(53,92,134,0.05)',
-            borderRadius: '10px', borderLeft: '3px solid rgba(53,92,134,0.25)',
-            marginTop: '1rem'
-          }}>
-            Vous pouvez configurer votre navigateur pour refuser les cookies. Certaines fonctionnalités du site peuvent alors ne plus fonctionner correctement.
-          </div>
         </section>
 
         {/* Contact */}
@@ -441,22 +368,23 @@ export default function PrivacyPolicy() {
             fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
             paddingLeft: '1rem', borderLeft: '3px solid #355C86'
           }}>
+            <Mail size={20} style={{ display: 'inline', marginRight: '10px', verticalAlign: 'middle' }} />
             Contact
           </h2>
-          <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
-            Pour toute question concernant cette politique :
-          </p>
           <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <Mail size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
               Email : <strong>privacy@tryon.cm</strong>
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <MapPin size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
               Adresse : TryOn, Douala, Cameroun
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <Phone size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
               Téléphone : +237 671 207 375
             </li>
           </ul>
@@ -485,7 +413,8 @@ export default function PrivacyPolicy() {
           textDecoration: 'none', transition: 'all 0.25s ease',
           boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
         }}>
-          🏠 Retourner à l'accueil
+          <Home size={16} strokeWidth={2} />
+          Retourner à l'accueil
         </Link>
       </section>
     </div>

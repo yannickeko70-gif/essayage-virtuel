@@ -1,5 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import MobileHeader from '../../components/layout/MobileHeader';
+
+// ─── ICÔNES LUCIDE ───
+import {
+  Ruler,
+  Scale,
+  ArrowUpDown,
+  Lightbulb,
+  Sparkles,
+  ChevronLeft,
+} from 'lucide-react';
 
 const sizes = [
   { s: 'XS', chest: '76–81', waist: '58–63', hip: '84–89' },
@@ -11,21 +22,27 @@ const sizes = [
 ];
 
 const measures = [
-  { icon: '📏', title: 'Tour de poitrine', desc: 'Mesurez autour de la partie la plus forte de votre poitrine, en gardant le ruban horizontal.' },
-  { icon: '📐', title: 'Tour de taille', desc: 'Mesurez autour de la partie la plus fine de votre taille, généralement au niveau du nombril.' },
-  { icon: '📏', title: 'Tour de hanches', desc: 'Mesurez autour de la partie la plus forte de vos hanches et fesses.' },
-  { icon: '📏', title: 'Longueur de jambe', desc: 'Mesurez de l\'entrejambe jusqu\'au sol, pieds nus.' }
+  { icon: Ruler, title: 'Tour de poitrine', desc: 'Mesurez autour de la partie la plus forte de votre poitrine, en gardant le ruban horizontal.' },
+  { icon: Ruler, title: 'Tour de taille', desc: 'Mesurez autour de la partie la plus fine de votre taille, généralement au niveau du nombril.' },
+  { icon: Scale, title: 'Tour de hanches', desc: 'Mesurez autour de la partie la plus forte de vos hanches et fesses.' },
+  { icon: ArrowUpDown, title: 'Longueur de jambe', desc: 'Mesurez de l\'entrejambe jusqu\'au sol, pieds nus.' }
 ];
 
 export default function SizeGuide() {
   return (
     <div className="static-page" style={{ paddingTop: '72px', minHeight: '100vh', background: '#F9F9F9' }}>
+      <MobileHeader />
       <style>{`
+        /* ============================================================
+           SIZE GUIDE — RESPONSIVE
+        ============================================================ */
         @media (max-width: 900px) {
           .static-hero { padding: 3rem 1.5rem 2.5rem !important; }
           .static-hero-title { font-size: clamp(1.8rem, 3.5vw, 2.8rem) !important; }
           .static-main { padding: 2.5rem 1.5rem 2rem !important; }
           .static-grid-2 { grid-template-columns: 1fr !important; }
+          .static-back-btn { width: 40px !important; height: 40px !important; }
+          .static-back-btn svg { width: 20px !important; height: 20px !important; }
         }
         @media (max-width: 640px) {
           .static-page { padding-top: 0 !important; }
@@ -38,11 +55,15 @@ export default function SizeGuide() {
           .static-p { font-size: 0.9rem !important; }
           .static-ul li { font-size: 0.9rem !important; }
           .static-card { padding: 1.25rem !important; }
+          .static-card svg { width: 24px !important; height: 24px !important; }
           .static-cta { padding: 3rem 1.5rem !important; }
           .static-cta-title { font-size: 1.6rem !important; }
           .static-cta-sub { font-size: 0.9rem !important; }
           .static-cta-btn { padding: 0.75rem 1.5rem !important; font-size: 11px !important; }
+          .static-cta-btn svg { width: 16px !important; height: 16px !important; }
           .size-table th, .size-table td { padding: 0.75rem 0.75rem !important; font-size: 0.85rem !important; }
+          .static-back-btn { width: 36px !important; height: 36px !important; }
+          .static-back-btn svg { width: 18px !important; height: 18px !important; }
         }
         @media (max-width: 420px) {
           .static-hero { padding: 1.5rem 0.75rem 1.25rem !important; }
@@ -50,26 +71,52 @@ export default function SizeGuide() {
           .static-main { padding: 1rem 0.75rem 1rem !important; }
           .static-h2 { font-size: 1.2rem !important; }
           .static-card { padding: 1rem !important; }
+          .static-card svg { width: 20px !important; height: 20px !important; }
           .static-cta { padding: 2rem 1rem !important; }
           .static-cta-title { font-size: 1.3rem !important; }
           .size-table th, .size-table td { padding: 0.5rem 0.5rem !important; font-size: 0.75rem !important; }
+          .static-back-btn { width: 32px !important; height: 32px !important; }
+          .static-back-btn svg { width: 16px !important; height: 16px !important; }
+        }
+        .static-ul {
+          list-style: none !important;
+          padding: 0 !important;
+        }
+        .static-ul li {
+          list-style: none !important;
         }
       `}</style>
 
       <section className="static-hero" style={{
         background: 'linear-gradient(135deg, #EEF3F8 0%, #DDE8F3 100%)',
         padding: '5rem 2rem 4rem', textAlign: 'center',
-        borderBottom: '1px solid rgba(0,0,0,0.08)'
+        borderBottom: '1px solid rgba(0,0,0,0.08)',
+        position: 'relative'
       }}>
+        <button 
+          className="static-back-btn"
+          onClick={() => window.history.back()}
+          style={{
+            position: 'absolute', top: '20px', left: '20px',
+            width: '44px', height: '44px', borderRadius: '14px',
+            border: '1px solid rgba(0,0,0,0.08)', background: '#fff',
+            cursor: 'pointer', boxShadow: '0 3px 14px rgba(0,0,0,0.06)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}
+        >
+          <ChevronLeft size={22} strokeWidth={2} />  {/* ← Changé */}
+        </button>
+
         <div className="static-hero-badge" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '6px',
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
           background: 'rgba(53,92,134,0.09)', color: '#26384D',
           border: '1px solid rgba(53,92,134,0.14)',
           fontSize: '10px', fontWeight: 600, letterSpacing: '2px',
-          textTransform: 'uppercase', padding: '4px 14px',
+          textTransform: 'uppercase', padding: '6px 16px',
           borderRadius: '50px', marginBottom: '1.25rem'
         }}>
-          📐 Guide des tailles
+          <Ruler size={14} strokeWidth={2} />
+          Guide des tailles
         </div>
         <h1 className="static-hero-title" style={{
           fontFamily: "'Cormorant Garamond', serif",
@@ -92,40 +139,48 @@ export default function SizeGuide() {
           <h2 className="static-h2" style={{
             fontFamily: "'Cormorant Garamond', serif", fontSize: '1.75rem',
             fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
-            paddingLeft: '1rem', borderLeft: '3px solid #355C86'
+            paddingLeft: '1rem', borderLeft: '3px solid #355C86',
+            display: 'flex', alignItems: 'center', gap: '10px'
           }}>
+            <Ruler size={22} strokeWidth={1.8} />
             Comment prendre vos mesures
           </h2>
           <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
             Pour garantir un ajustement parfait avec notre cabine d'essayage virtuel, veuillez suivre ces étapes simples :
           </p>
           <div className="static-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
-            {measures.map(m => (
-              <div key={m.title} className="static-card" style={{
-                background: '#fff', borderRadius: '14px', padding: '1.75rem',
-                boxShadow: '0 10px 28px rgba(26,26,26,0.08)',
-                border: '1px solid rgba(0,0,0,0.08)'
-              }}>
-                <div className="static-card-title" style={{
-                  fontFamily: "'Cormorant Garamond', serif", fontSize: '1.2rem',
-                  fontWeight: 600, color: '#1A1A1A', marginBottom: '0.75rem',
-                  display: 'flex', alignItems: 'center', gap: '0.5rem'
+            {measures.map(m => {
+              const Icon = m.icon;
+              return (
+                <div key={m.title} className="static-card" style={{
+                  background: '#fff', borderRadius: '14px', padding: '1.75rem',
+                  boxShadow: '0 10px 28px rgba(26,26,26,0.08)',
+                  border: '1px solid rgba(0,0,0,0.08)'
                 }}>
-                  {m.icon} {m.title}
+                  <div className="static-card-title" style={{
+                    fontFamily: "'Cormorant Garamond', serif", fontSize: '1.2rem',
+                    fontWeight: 600, color: '#1A1A1A', marginBottom: '0.75rem',
+                    display: 'flex', alignItems: 'center', gap: '0.5rem'
+                  }}>
+                    <Icon size={24} strokeWidth={1.8} color="#355C86" />
+                    {m.title}
+                  </div>
+                  <p className="static-card-text" style={{ fontSize: '0.9375rem', color: '#6A6F78', lineHeight: '1.65' }}>
+                    {m.desc}
+                  </p>
                 </div>
-                <p className="static-card-text" style={{ fontSize: '0.9375rem', color: '#6A6F78', lineHeight: '1.65' }}>
-                  {m.desc}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="static-note" style={{
             fontSize: '0.875rem', color: '#6A6F78', fontStyle: 'italic',
             padding: '1rem 1.25rem', background: 'rgba(53,92,134,0.05)',
             borderRadius: '10px', borderLeft: '3px solid rgba(53,92,134,0.25)',
-            marginTop: '1rem'
+            marginTop: '1rem',
+            display: 'flex', alignItems: 'center', gap: '8px'
           }}>
-            💡 Conseil : pour plus de précision, demandez à quelqu'un de vous aider à prendre vos mesures.
+            <Lightbulb size={16} strokeWidth={2} color="#355C86" />
+            Conseil : pour plus de précision, demandez à quelqu'un de vous aider à prendre vos mesures.
           </div>
         </section>
 
@@ -133,8 +188,10 @@ export default function SizeGuide() {
           <h2 className="static-h2" style={{
             fontFamily: "'Cormorant Garamond', serif", fontSize: '1.75rem',
             fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
-            paddingLeft: '1rem', borderLeft: '3px solid #355C86'
+            paddingLeft: '1rem', borderLeft: '3px solid #355C86',
+            display: 'flex', alignItems: 'center', gap: '10px'
           }}>
+            <Scale size={22} strokeWidth={1.8} />
             Tableau des tailles
           </h2>
           <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1.5rem' }}>
@@ -226,6 +283,7 @@ export default function SizeGuide() {
             borderRadius: '10px', borderLeft: '3px solid rgba(53,92,134,0.25)',
             marginTop: '1rem'
           }}>
+            <Sparkles size={14} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
             Ces mesures sont indicatives. Pour un ajustement optimal, utilisez notre fonctionnalité d'essayage virtuel.
           </div>
         </section>
@@ -243,15 +301,15 @@ export default function SizeGuide() {
           </p>
           <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               Pour les hauts et robes : choisissez la taille supérieure si votre poitrine est plus grande.
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               Pour les pantalons et jupes : choisissez la taille supérieure si vos hanches sont plus grandes.
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
               En cas de doute, n'hésitez pas à nous contacter pour un conseil personnalisé.
             </li>
           </ul>
@@ -391,7 +449,8 @@ export default function SizeGuide() {
           textDecoration: 'none', transition: 'all 0.25s ease',
           boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
         }}>
-          ✨ Commencer l'essayage
+          <Sparkles size={16} strokeWidth={2} />
+          Commencer l'essayage
         </Link>
       </section>
     </div>

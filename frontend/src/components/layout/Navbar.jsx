@@ -4,12 +4,26 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { adminService } from '../../services/adminService';
 
+// ─── ICÔNES LUCIDE ───
+import {
+  User,
+  Bell,
+  BellDot,
+  ShoppingCart,
+  Settings,
+  Package,
+  LogOut,
+  Home,
+  ShoppingBag,
+  ChevronDown,
+} from 'lucide-react';
+
 export default function Navbar() {
   const location = useLocation();
   const { count } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);  // ← NOUVEAU
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -21,7 +35,6 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isDropdownOpen]);
 
-  // ← NOUVEAU : charger le nombre de notifs non lues
   useEffect(() => {
     if (!isAuthenticated) return;
     const fetchUnread = async () => {
@@ -37,7 +50,7 @@ export default function Navbar() {
       }
     };
     fetchUnread();
-    const interval = setInterval(fetchUnread, 60000); // refresh toutes les 60s
+    const interval = setInterval(fetchUnread, 60000);
     return () => clearInterval(interval);
   }, [isAuthenticated]);
 
@@ -68,9 +81,9 @@ export default function Navbar() {
               {user?.avatar || user?.picture ? (
                 <img src={user.avatar || user.picture} alt={user.firstName} className="navbar-user-photo" />
               ) : user?.firstName ? (
-                <span>{user.firstName.charAt(0).toUpperCase()}</span>
+                <span style={{ fontSize: '18px', fontWeight: 600 }}>{user.firstName.charAt(0).toUpperCase()}</span>
               ) : (
-                <span>👤</span>
+                <User size={20} strokeWidth={2} />
               )}
             </button>
 
@@ -81,7 +94,7 @@ export default function Navbar() {
                     {user?.avatar || user?.picture ? (
                       <img src={user.avatar || user.picture} alt={user.firstName} className="dropdown-user-photo" />
                     ) : (
-                      (user?.firstName || "?").charAt(0).toUpperCase()
+                      <User size={20} strokeWidth={2} style={{ color: '#fff' }} />
                     )}
                   </div>
                   <div>
@@ -92,10 +105,16 @@ export default function Navbar() {
 
                 <div className="user-dropdown-links">
                   <Link to="/profile" className="user-dropdown-link" onClick={() => setIsDropdownOpen(false)}>
-                    <span className="user-dropdown-link-icon">⚙</span> Paramètres
+                    <span className="user-dropdown-link-icon">
+                      <Settings size={16} strokeWidth={2} />
+                    </span>
+                    Paramètres
                   </Link>
                   <Link to="/orders" className="user-dropdown-link" onClick={() => setIsDropdownOpen(false)}>
-                    <span className="user-dropdown-link-icon">📦</span> Mes commandes
+                    <span className="user-dropdown-link-icon">
+                      <Package size={16} strokeWidth={2} />
+                    </span>
+                    Mes commandes
                   </Link>
                 </div>
 
@@ -108,13 +127,18 @@ export default function Navbar() {
                     window.location.href = "/";
                   }}
                 >
-                  <span className="user-dropdown-link-icon">↪</span> Se déconnecter
+                  <span className="user-dropdown-link-icon">
+                    <LogOut size={16} strokeWidth={2} />
+                  </span>
+                  Se déconnecter
                 </button>
               </div>
             )}
           </div>
         ) : (
-          <Link to="/auth" className="header-icon-btn"><span>👤</span></Link>
+          <Link to="/auth" className="header-icon-btn">
+            <User size={20} strokeWidth={2} />
+          </Link>
         )}
 
         {/* 🔔 Icône notifications — visible seulement si connecté */}
@@ -126,7 +150,11 @@ export default function Navbar() {
             aria-label="Notifications"
             onClick={() => setUnreadCount(0)}
           >
-            <span>🔔</span>
+            {unreadCount > 0 ? (
+              <BellDot size={20} strokeWidth={2} />
+            ) : (
+              <Bell size={20} strokeWidth={2} />
+            )}
             {unreadCount > 0 && (
               <span className="cart-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
             )}
@@ -134,7 +162,7 @@ export default function Navbar() {
         )}
 
         <Link to="/cart" className="header-icon-btn" style={{ position: 'relative' }}>
-          <span>🛒</span>
+          <ShoppingCart size={20} strokeWidth={2} />
           {count > 0 && <span className="cart-badge">{count}</span>}
         </Link>
       </div>

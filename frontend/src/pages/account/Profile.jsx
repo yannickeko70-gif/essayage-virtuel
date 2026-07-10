@@ -2,8 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
+// ─── ICÔNES LUCIDE ───
+import {
+  User,
+  Mail,
+  Phone,
+  Bell,
+  HelpCircle,
+  Lock,
+  FileText,
+  Truck,
+  Undo2,
+  Settings,
+  LogOut,
+  ChevronRight,
+  ShoppingBag,
+  Sparkles,
+  ShoppingCart,
+  Users,
+  Edit2,
+  Check,
+  X,
+  Loader2,
+  Home,
+  Package,
+  Heart,
+  Ruler,
+  MapPin,
+  ShieldCheck,
+  BookOpen,
+} from 'lucide-react';
+
 /* ── Helpers ── */
-const Row = ({ icon, label, right, onClick, to, chevron = true, danger = false }) => {
+const Row = ({ icon: Icon, label, right, onClick, to, chevron = true, danger = false }) => {
   const style = {
     display: 'flex', alignItems: 'center', gap: '14px',
     padding: '15px 20px', cursor: onClick || to ? 'pointer' : 'default',
@@ -17,17 +48,18 @@ const Row = ({ icon, label, right, onClick, to, chevron = true, danger = false }
     width: 36, height: 36, borderRadius: 10,
     background: danger ? 'rgba(192,57,43,0.08)' : 'rgba(53,92,134,0.08)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: '16px', flexShrink: 0,
+    flexShrink: 0,
+    color: danger ? '#C0392B' : '#355C86',
   };
   const inner = (
     <>
-      <div style={iconBox}>{icon}</div>
+      <div style={iconBox}>
+        <Icon size={18} strokeWidth={1.8} />
+      </div>
       <span style={{ flex: 1, fontWeight: 500 }}>{label}</span>
       {right && <span style={{ fontSize: '0.875rem', color: '#6A6F78' }}>{right}</span>}
       {chevron && !right && (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={danger ? '#C0392B' : '#9CA3AF'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
+        <ChevronRight size={16} strokeWidth={2} color={danger ? '#C0392B' : '#9CA3AF'} />
       )}
     </>
   );
@@ -108,12 +140,12 @@ export default function Profile() {
   const role     = isAdmin ? 'Administrateur' : 'Client';
 
   const quickActions = [
-    { icon: '📦', label: 'Commandes', to: '/orders' },
-    { icon: '✨', label: 'Essayage',  to: '/tryon'  },
-    { icon: '🛒', label: 'Panier',    to: '/cart'   },
+    { icon: ShoppingBag, label: 'Commandes', to: '/orders' },
+    { icon: Sparkles, label: 'Essayage', to: '/tryon' },
+    { icon: ShoppingCart, label: 'Panier', to: '/cart' },
     isAdmin
-      ? { icon: '⚙️', label: 'Admin', to: '/admin' }
-      : { icon: '👤', label: 'Modifier', action: () => setEditOpen(true) },
+      ? { icon: Settings, label: 'Admin', to: '/admin' }
+      : { icon: Edit2, label: 'Modifier', action: () => setEditOpen(true) },
   ];
 
   return (
@@ -206,7 +238,10 @@ export default function Profile() {
           .profile-group .profile-group-card > div > div:first-child {
             width: 30px !important;
             height: 30px !important;
-            font-size: 14px !important;
+          }
+          .profile-group .profile-group-card > div > div:first-child svg {
+            width: 16px !important;
+            height: 16px !important;
           }
           .profile-group .profile-group-card > div > span {
             font-size: 0.85rem !important;
@@ -289,7 +324,10 @@ export default function Profile() {
           .profile-group .profile-group-card > div > div:first-child {
             width: 26px !important;
             height: 26px !important;
-            font-size: 12px !important;
+          }
+          .profile-group .profile-group-card > div > div:first-child svg {
+            width: 14px !important;
+            height: 14px !important;
           }
           .profile-form-grid {
             padding: 12px !important;
@@ -376,11 +414,13 @@ export default function Profile() {
         {/* ── Alertes ── */}
         {success && (
           <div className="profile-alert" style={{ background: '#ECFDF5', border: '1px solid #6EE7B7', borderRadius: '12px', padding: '14px 18px', marginBottom: '16px', color: '#065F46', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            ✅ {success}
+            <Check size={18} />
+            {success}
           </div>
         )}
         {error && (
           <div className="profile-alert" style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '12px', padding: '14px 18px', marginBottom: '16px', color: '#B91C1C', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <X size={18} />
             ⚠️ {error}
           </div>
         )}
@@ -394,10 +434,14 @@ export default function Profile() {
               boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)',
               cursor: 'pointer', transition: 'transform 0.18s, box-shadow 0.18s',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+              border: 'none',
             };
+            const Icon = a.icon;
             const content = (
               <>
-                <div style={{ fontSize: '22px' }}>{a.icon}</div>
+                <div style={{ fontSize: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon size={24} strokeWidth={1.8} />
+                </div>
                 <span style={{ fontSize: '11px', fontWeight: 600, color: '#6A6F78' }}>{a.label}</span>
               </>
             );
@@ -409,7 +453,7 @@ export default function Profile() {
               </Link>
             );
             return (
-              <button key={a.label} type="button" onClick={a.action} style={{ ...cardStyle, border: 'none' }}
+              <button key={a.label} type="button" onClick={a.action} style={{ ...cardStyle, background: '#fff' }}
                 onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 6px 18px rgba(0,0,0,0.1)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 2px 10px rgba(0,0,0,0.06)'; }}>
                 {content}
@@ -421,7 +465,7 @@ export default function Profile() {
         {/* ── COMPTE ── */}
         <Group title="Compte">
           <Row
-            icon="👤"
+            icon={User}
             label="Modifier le profil"
             onClick={() => setEditOpen(!editOpen)}
           />
@@ -484,8 +528,10 @@ export default function Profile() {
                       color: '#fff', fontSize: '13px', fontWeight: 600,
                       cursor: isLoading ? 'not-allowed' : 'pointer',
                       letterSpacing: '0.5px', fontFamily: "'DM Sans', sans-serif",
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                     }}
                   >
+                    {isLoading ? <Loader2 size={18} className="spinner" /> : null}
                     {isLoading ? 'Enregistrement...' : 'Enregistrer'}
                   </button>
                   <button
@@ -505,22 +551,22 @@ export default function Profile() {
             </div>
           )}
 
-          <Row icon="📧" label="Email" right={user.email} chevron={false} />
-          <Row icon="📱" label="Téléphone" right={user.phone || 'Non renseigné'} chevron={false} />
+          <Row icon={Mail} label="Email" right={user.email} chevron={false} />
+          <Row icon={Phone} label="Téléphone" right={user.phone || 'Non renseigné'} chevron={false} />
         </Group>
 
         {/* ── PRÉFÉRENCES ── */}
         <Group title="Préférences">
-          <Row icon="🔔" label="Notifications" to="/notifications" />
+          <Row icon={Bell} label="Notifications" to="/notifications" />
         </Group>
 
         {/* ── SUPPORT ── */}
         <Group title="Support">
-          <Row icon="❓" label="Centre d'aide" to="/help-center" />
-          <Row icon="🔒" label="Politique de confidentialité" to="/privacy-policy" />
-          <Row icon="📋" label="Conditions générales de vente" to="/terms" />
-          <Row icon="🚚" label="Livraison" to="/shipping" />
-          <Row icon="↩️" label="Retours" to="/returns" />
+          <Row icon={HelpCircle} label="Centre d'aide" to="/help-center" />
+          <Row icon={ShieldCheck} label="Politique de confidentialité" to="/privacy-policy" />
+          <Row icon={FileText} label="Conditions générales de vente" to="/terms" />
+          <Row icon={Truck} label="Livraison" to="/shipping" />
+          <Row icon={Undo2} label="Retours" to="/returns" />
         </Group>
 
         {/* ── Se déconnecter ── */}
@@ -541,7 +587,8 @@ export default function Profile() {
           onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 10px 28px rgba(192,57,43,0.30)'; }}
           onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 6px 20px rgba(192,57,43,0.22)'; }}
         >
-          <span style={{ fontSize: '16px' }}>↪</span> Se déconnecter
+          <LogOut size={18} strokeWidth={2} />
+          Se déconnecter
         </button>
 
         <p className="profile-footer" style={{ textAlign: 'center', fontSize: '11px', color: '#9CA3AF', marginTop: '24px' }}>

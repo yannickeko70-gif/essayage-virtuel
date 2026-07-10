@@ -2,14 +2,37 @@ import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminService } from "../../services/adminService";
 import "./account-pages.css";
+import MobileHeader from '../../components/layout/MobileHeader';
+
+// ─── ICÔNES LUCIDE ───
+import {
+  ChevronLeft,
+  Search,
+  Package,
+  Truck,
+  CreditCard,
+  Sparkles,
+  Undo2,
+  User,
+  HelpCircle,
+  X,
+  Check,
+  Send,
+  AlertCircle,
+  Headphones,
+  MessageCircle,
+  Plus,
+  Minus,
+  Loader2,
+} from 'lucide-react';
 
 const categories = [
-  ["📦", "Commandes", "Suivi, modification et historique"],
-  ["🚚", "Livraison", "Délais, adresse et suivi colis"],
-  ["💳", "Paiement", "Méthodes, sécurité et validation"],
-  ["👕", "Essayage virtuel", "Photo, rendu IA et conseils"],
-  ["🔄", "Retours", "Échanges et remboursements"],
-  ["👤", "Compte", "Profil, mot de passe et sécurité"]
+  { icon: Package, label: "Commandes", desc: "Suivi, modification et historique" },
+  { icon: Truck, label: "Livraison", desc: "Délais, adresse et suivi colis" },
+  { icon: CreditCard, label: "Paiement", desc: "Méthodes, sécurité et validation" },
+  { icon: Sparkles, label: "Essayage virtuel", desc: "Photo, rendu IA et conseils" },
+  { icon: Undo2, label: "Retours", desc: "Échanges et remboursements" },
+  { icon: User, label: "Compte", desc: "Profil, mot de passe et sécurité" }
 ];
 
 const faqs = [
@@ -36,7 +59,7 @@ function FAQItem({ item }) {
         textAlign: 'left', color: '#1A1A1A', fontSize: '14px'
       }}>
         <span>{item.question}</span>
-        <b style={{ color: '#E30613', fontSize: '20px' }}>{open ? "−" : "+"}</b>
+        {open ? <Minus size={20} color="#E30613" /> : <Plus size={20} color="#E30613" />}
       </button>
       {open && (
         <p style={{
@@ -90,221 +113,84 @@ export default function HelpCenter() {
 
   return (
     <div className="help-center-page" style={{ paddingTop: '72px', minHeight: '100vh', background: '#F0F2F5' }}>
+      <MobileHeader />
       <style>{`
         /* ═══════════════════════════════════════
            RESPONSIVE — CENTRE D'AIDE
         ════════════════════════════════════════ */
 
-        /* ─── TABLETTE ─── */
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .spinner { animation: spin 1s linear infinite; }
+
         @media (max-width: 900px) {
-          .help-center-container {
-            padding: 16px 16px 80px !important;
-          }
-          .help-center-header h1 {
-            font-size: 32px !important;
-          }
-          .help-center-header p {
-            font-size: 13px !important;
-          }
-          .help-center-hero {
-            padding: 24px !important;
-          }
-          .help-center-hero h2 {
-            font-size: 28px !important;
-          }
-          .help-category-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 10px !important;
-          }
+          .help-center-container { padding: 16px 16px 80px !important; }
+          .help-center-header h1 { font-size: 32px !important; }
+          .help-center-header p { font-size: 13px !important; }
+          .help-center-hero { padding: 24px !important; }
+          .help-center-hero h2 { font-size: 28px !important; }
+          .help-category-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
         }
 
-        /* ─── MOBILE ─── */
         @media (max-width: 640px) {
-          .help-center-page {
-            padding-top: 0 !important;
-          }
-          .help-center-container {
-            padding: 12px 12px 80px !important;
-          }
-          .help-center-header {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 8px !important;
-            margin-bottom: 16px !important;
-          }
-          .help-center-header .back-btn {
-            width: 38px !important;
-            height: 38px !important;
-            font-size: 18px !important;
-          }
-          .help-center-header h1 {
-            font-size: 28px !important;
-          }
-          .help-center-header p {
-            font-size: 12px !important;
-          }
-          .help-center-hero {
-            padding: 18px 16px !important;
-            border-radius: 16px !important;
-          }
-          .help-center-hero h2 {
-            font-size: 22px !important;
-          }
-          .help-center-hero .help-search {
-            padding: 0 12px !important;
-          }
-          .help-center-hero .help-search input {
-            height: 44px !important;
-            font-size: 14px !important;
-          }
-          .help-center-hero .help-search span {
-            font-size: 16px !important;
-          }
-          .help-category-grid {
-            grid-template-columns: 1fr 1fr !important;
-            gap: 8px !important;
-          }
-          .help-category-grid button {
-            padding: 14px 10px !important;
-            border-radius: 14px !important;
-          }
-          .help-category-grid button div {
-            font-size: 20px !important;
-            margin-bottom: 6px !important;
-          }
-          .help-category-grid button h3 {
-            font-size: 13px !important;
-          }
-          .help-category-grid button p {
-            font-size: 11px !important;
-          }
-          .help-section-title {
-            font-size: 11px !important;
-            margin: 20px 0 10px !important;
-          }
-          .faq-item button {
-            padding: 14px 14px !important;
-            font-size: 13px !important;
-          }
-          .faq-item button b {
-            font-size: 18px !important;
-          }
-          .faq-item p {
-            padding: 0 14px 14px !important;
-            font-size: 13px !important;
-          }
-          .help-contact-card {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 14px !important;
-            padding: 18px !important;
-            margin-top: 20px !important;
-          }
-          .help-contact-card h3 {
-            font-size: 16px !important;
-          }
-          .help-contact-card p {
-            font-size: 13px !important;
-          }
-          .help-contact-card button {
-            width: 100% !important;
-            padding: 14px !important;
-            font-size: 13px !important;
-          }
-          .help-modal-overlay {
-            padding: 12px !important;
-            align-items: flex-end !important;
-          }
-          .help-modal {
-            padding: 20px !important;
-            border-radius: 20px 20px 0 0 !important;
-          }
-          .help-modal-head h3 {
-            font-size: 20px !important;
-          }
-          .help-modal-head button {
-            width: 32px !important;
-            height: 32px !important;
-            font-size: 18px !important;
-          }
-          .help-modal form {
-            gap: 10px !important;
-          }
-          .help-modal label {
-            font-size: 11px !important;
-          }
-          .help-modal input,
-          .help-modal select,
-          .help-modal textarea {
-            padding: 10px 12px !important;
-            font-size: 13px !important;
-            border-radius: 12px !important;
-          }
-          .help-modal textarea {
-            min-height: 100px !important;
-          }
-          .help-modal button[type="submit"] {
-            padding: 14px !important;
-            font-size: 13px !important;
-          }
+          .help-center-page { padding-top: 0 !important; }
+          .help-center-container { padding: 12px 12px 80px !important; }
+          .help-center-header { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; margin-bottom: 16px !important; }
+          .help-center-header .back-btn { width: 38px !important; height: 38px !important; }
+          .help-center-header .back-btn svg { width: 18px !important; height: 18px !important; }
+          .help-center-header h1 { font-size: 28px !important; }
+          .help-center-header p { font-size: 12px !important; }
+          .help-center-hero { padding: 18px 16px !important; border-radius: 16px !important; }
+          .help-center-hero h2 { font-size: 22px !important; }
+          .help-center-hero .help-search { padding: 0 12px !important; }
+          .help-center-hero .help-search input { height: 44px !important; font-size: 14px !important; }
+          .help-center-hero .help-search .search-icon { font-size: 16px !important; }
+          .help-category-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+          .help-category-grid button { padding: 14px 10px !important; border-radius: 14px !important; }
+          .help-category-grid button .cat-icon { font-size: 20px !important; margin-bottom: 6px !important; }
+          .help-category-grid button .cat-icon svg { width: 20px !important; height: 20px !important; }
+          .help-category-grid button h3 { font-size: 13px !important; }
+          .help-category-grid button p { font-size: 11px !important; }
+          .help-section-title { font-size: 11px !important; margin: 20px 0 10px !important; }
+          .faq-item button { padding: 14px 14px !important; font-size: 13px !important; }
+          .faq-item button svg { width: 18px !important; height: 18px !important; }
+          .faq-item p { padding: 0 14px 14px !important; font-size: 13px !important; }
+          .help-contact-card { flex-direction: column !important; align-items: flex-start !important; gap: 14px !important; padding: 18px !important; margin-top: 20px !important; }
+          .help-contact-card h3 { font-size: 16px !important; }
+          .help-contact-card p { font-size: 13px !important; }
+          .help-contact-card button { width: 100% !important; padding: 14px !important; font-size: 13px !important; }
+          .help-modal-overlay { padding: 12px !important; align-items: flex-end !important; }
+          .help-modal { padding: 20px !important; border-radius: 20px 20px 0 0 !important; }
+          .help-modal-head h3 { font-size: 20px !important; }
+          .help-modal-head button { width: 32px !important; height: 32px !important; }
+          .help-modal-head button svg { width: 18px !important; height: 18px !important; }
+          .help-modal form { gap: 10px !important; }
+          .help-modal label { font-size: 11px !important; }
+          .help-modal input, .help-modal select, .help-modal textarea { padding: 10px 12px !important; font-size: 13px !important; border-radius: 12px !important; }
+          .help-modal textarea { min-height: 100px !important; }
+          .help-modal button[type="submit"] { padding: 14px !important; font-size: 13px !important; }
         }
 
-        /* ─── TRÈS PETIT ÉCRAN (iPhone SE) ─── */
         @media (max-width: 420px) {
-          .help-center-container {
-            padding: 8px 8px 80px !important;
-          }
-          .help-center-hero {
-            padding: 14px 12px !important;
-          }
-          .help-center-hero h2 {
-            font-size: 18px !important;
-          }
-          .help-center-hero .help-search input {
-            height: 38px !important;
-            font-size: 12px !important;
-          }
-          .help-category-grid {
-            grid-template-columns: 1fr !important;
-            gap: 8px !important;
-          }
-          .help-category-grid button {
-            padding: 12px 10px !important;
-          }
-          .help-category-grid button div {
-            font-size: 18px !important;
-          }
-          .help-category-grid button h3 {
-            font-size: 12px !important;
-          }
-          .help-category-grid button p {
-            font-size: 10px !important;
-          }
-          .faq-item button {
-            padding: 12px 12px !important;
-            font-size: 12px !important;
-          }
-          .faq-item button b {
-            font-size: 16px !important;
-          }
-          .faq-item p {
-            font-size: 12px !important;
-          }
-          .help-contact-card {
-            padding: 14px !important;
-          }
-          .help-modal {
-            padding: 16px !important;
-          }
-          .help-modal-head h3 {
-            font-size: 18px !important;
-          }
-          .help-modal input,
-          .help-modal select,
-          .help-modal textarea {
-            padding: 8px 10px !important;
-            font-size: 12px !important;
-          }
+          .help-center-container { padding: 8px 8px 80px !important; }
+          .help-center-hero { padding: 14px 12px !important; }
+          .help-center-hero h2 { font-size: 18px !important; }
+          .help-center-hero .help-search input { height: 38px !important; font-size: 12px !important; }
+          .help-category-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+          .help-category-grid button { padding: 12px 10px !important; }
+          .help-category-grid button .cat-icon { font-size: 18px !important; }
+          .help-category-grid button .cat-icon svg { width: 18px !important; height: 18px !important; }
+          .help-category-grid button h3 { font-size: 12px !important; }
+          .help-category-grid button p { font-size: 10px !important; }
+          .faq-item button { padding: 12px 12px !important; font-size: 12px !important; }
+          .faq-item button svg { width: 16px !important; height: 16px !important; }
+          .faq-item p { font-size: 12px !important; }
+          .help-contact-card { padding: 14px !important; }
+          .help-modal { padding: 16px !important; }
+          .help-modal-head h3 { font-size: 18px !important; }
+          .help-modal input, .help-modal select, .help-modal textarea { padding: 8px 10px !important; font-size: 12px !important; }
         }
       `}</style>
 
@@ -315,11 +201,11 @@ export default function HelpCenter() {
           <button className="back-btn" onClick={() => navigate(-1)} style={{
             width: '44px', height: '44px', borderRadius: '14px',
             border: '1px solid rgba(0,0,0,0.08)', background: '#fff',
-            cursor: 'pointer', fontSize: '22px',
+            cursor: 'pointer',
             boxShadow: '0 3px 14px rgba(0,0,0,0.06)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
-            ←
+            <ChevronLeft size={22} strokeWidth={2} />
           </button>
           <div>
             <h1 style={{ margin: 0, fontFamily: "'Cormorant Garamond', serif", fontSize: '38px', fontWeight: 600, color: '#1A1A1A' }}>
@@ -334,10 +220,17 @@ export default function HelpCenter() {
         {/* Hero avec recherche */}
         <div className="help-center-hero" style={{
           background: 'linear-gradient(160deg, #1A1A1A 0%, #26384D 100%)',
-          borderRadius: '24px', padding: '28px', color: '#fff',
-          boxShadow: '0 8px 32px rgba(26,38,56,0.18)', marginBottom: '24px'
+          borderRadius: '24px', padding: '28px',
+          boxShadow: '0 8px 32px rgba(26,38,56,0.18)',
+          marginBottom: '24px'
         }}>
-          <h2 style={{ margin: '0 0 18px', fontFamily: "'Cormorant Garamond', serif", fontSize: '34px', fontWeight: 600 }}>
+          <h2 style={{ 
+            margin: '0 0 18px', 
+            fontFamily: "'Cormorant Garamond', serif", 
+            fontSize: '34px', 
+            fontWeight: 600,
+            color: '#fff'
+          }}>
             Comment pouvons-nous vous aider ?
           </h2>
           <div className="help-search" style={{
@@ -346,7 +239,7 @@ export default function HelpCenter() {
             border: '1px solid rgba(255,255,255,0.18)',
             borderRadius: '16px', padding: '0 16px'
           }}>
-            <span style={{ fontSize: '18px' }}>🔍</span>
+            <Search size={18} color="rgba(255,255,255,0.6)" className="search-icon" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -365,18 +258,22 @@ export default function HelpCenter() {
           <div className="help-success" style={{
             background: '#ECFDF5', border: '1px solid #6EE7B7',
             borderRadius: '12px', padding: '14px 18px',
-            marginBottom: '14px', color: '#065F46', fontSize: '14px'
+            marginBottom: '14px', color: '#065F46', fontSize: '14px',
+            display: 'flex', alignItems: 'center', gap: '8px'
           }}>
-            ✅ {success}
+            <Check size={18} strokeWidth={2} />
+            {success}
           </div>
         )}
         {error && (
           <div className="help-error" style={{
             background: '#FEF2F2', border: '1px solid #FCA5A5',
             borderRadius: '12px', padding: '14px 18px',
-            marginBottom: '14px', color: '#B91C1C', fontSize: '14px'
+            marginBottom: '14px', color: '#B91C1C', fontSize: '14px',
+            display: 'flex', alignItems: 'center', gap: '8px'
           }}>
-            ⚠️ {error}
+            <AlertCircle size={18} strokeWidth={2} />
+            {error}
           </div>
         )}
 
@@ -392,30 +289,41 @@ export default function HelpCenter() {
           display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
           gap: '12px', marginBottom: '24px'
         }}>
-          {categories.map(([ic, title, text]) => (
-            <button
-              key={title}
-              onClick={() => setSearch(title)}
-              style={{
-                background: '#fff', border: '1px solid rgba(0,0,0,0.06)',
-                borderRadius: '18px', padding: '18px', textAlign: 'left',
-                cursor: 'pointer', boxShadow: '0 3px 16px rgba(0,0,0,0.06)',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.09)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = '';
-                e.currentTarget.style.boxShadow = '0 3px 16px rgba(0,0,0,0.06)';
-              }}
-            >
-              <div style={{ fontSize: '25px', marginBottom: '10px' }}>{ic}</div>
-              <h3 style={{ margin: '0 0 5px', fontSize: '15px', color: '#1A1A1A' }}>{title}</h3>
-              <p style={{ margin: 0, color: '#6A6F78', fontSize: '12px', lineHeight: '1.45' }}>{text}</p>
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const Icon = cat.icon;
+            return (
+              <button
+                key={cat.label}
+                onClick={() => setSearch(cat.label)}
+                style={{
+                  background: '#fff', border: '1px solid rgba(0,0,0,0.06)',
+                  borderRadius: '18px', padding: '18px', textAlign: 'left',
+                  cursor: 'pointer', boxShadow: '0 3px 16px rgba(0,0,0,0.06)',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.09)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = '';
+                  e.currentTarget.style.boxShadow = '0 3px 16px rgba(0,0,0,0.06)';
+                }}
+              >
+                <div className="cat-icon" style={{ 
+                  fontSize: '25px', 
+                  marginBottom: '10px',
+                  color: '#355C86',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  <Icon size={28} strokeWidth={1.8} />
+                </div>
+                <h3 style={{ margin: '0 0 5px', fontSize: '15px', color: '#1A1A1A' }}>{cat.label}</h3>
+                <p style={{ margin: 0, color: '#6A6F78', fontSize: '12px', lineHeight: '1.45' }}>{cat.desc}</p>
+              </button>
+            );
+          })}
         </div>
 
         {/* FAQ */}
@@ -435,7 +343,7 @@ export default function HelpCenter() {
               textAlign: 'center', border: '1px solid rgba(0,0,0,0.06)',
               color: '#6A6F78'
             }}>
-              <div style={{ fontSize: '38px' }}>🔍</div>
+              <Search size={48} strokeWidth={1.5} style={{ margin: '0 auto 12px', display: 'block', opacity: 0.3 }} />
               <h3 style={{ margin: '8px 0 4px', color: '#1A1A1A', fontSize: '18px' }}>Aucune réponse trouvée</h3>
               <p style={{ margin: 0, fontSize: '14px', color: '#6A6F78' }}>Essayez un autre mot-clé ou contactez le support.</p>
             </div>
@@ -462,9 +370,11 @@ export default function HelpCenter() {
               border: 0, borderRadius: '14px', padding: '14px 18px',
               background: 'linear-gradient(135deg, #1A1A1A, #355C86)',
               color: '#fff', fontWeight: 800, cursor: 'pointer',
-              whiteSpace: 'nowrap', fontSize: '13px'
+              whiteSpace: 'nowrap', fontSize: '13px',
+              display: 'flex', alignItems: 'center', gap: '8px'
             }}
           >
+            <Headphones size={16} strokeWidth={2} />
             Contacter le support
           </button>
         </div>
@@ -486,14 +396,16 @@ export default function HelpCenter() {
               display: 'flex', justifyContent: 'space-between',
               alignItems: 'center', marginBottom: '18px'
             }}>
-              <h3 style={{ margin: 0, fontSize: '22px', color: '#1A1A1A' }}>Contacter le support</h3>
+              <h3 style={{ margin: 0, fontSize: '22px', color: '#1A1A1A' }}>
+                <MessageCircle size={20} style={{ display: 'inline', marginRight: '10px', verticalAlign: 'middle' }} />
+                Contacter le support
+              </h3>
               <button onClick={() => setModalOpen(false)} style={{
                 width: '36px', height: '36px', borderRadius: '12px',
                 border: 0, background: '#F3F4F6', cursor: 'pointer',
-                fontSize: '22px', display: 'flex', alignItems: 'center',
-                justifyContent: 'center'
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
-                ×
+                <X size={20} strokeWidth={2} />
               </button>
             </div>
             <form onSubmit={submitTicket} style={{ display: 'grid', gap: '12px' }}>
@@ -574,10 +486,21 @@ export default function HelpCenter() {
                   border: 0, borderRadius: '14px', padding: '14px 18px',
                   background: sending ? '#9CA3AF' : 'linear-gradient(135deg, #1A1A1A, #355C86)',
                   color: '#fff', fontWeight: 800, cursor: sending ? 'not-allowed' : 'pointer',
-                  fontSize: '13px'
+                  fontSize: '13px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
                 }}
               >
-                {sending ? "Envoi..." : "Envoyer la demande"}
+                {sending ? (
+                  <>
+                    <Loader2 size={18} className="spinner" strokeWidth={2} />
+                    Envoi...
+                  </>
+                ) : (
+                  <>
+                    <Send size={16} strokeWidth={2} />
+                    Envoyer la demande
+                  </>
+                )}
               </button>
             </form>
           </div>

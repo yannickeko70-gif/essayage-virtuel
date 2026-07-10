@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { adminService } from '../services/adminService';
 import { useCart } from '../context/CartContext';
+import MobileHeader from '../components/layout/MobileHeader';
 
 import { ShoppingCart, Sparkles } from 'lucide-react';
 
@@ -620,6 +621,7 @@ export default function Home() {
 
   return (
     <div style={{ paddingTop: '72px' }}>
+      <MobileHeader />
       <style>{`
         /* ─── EN-TÊTE MOBILE ─── */
         .mobile-home-header {
@@ -702,26 +704,6 @@ export default function Home() {
         }
       `}</style>
 
-      {/* ─── EN-TÊTE MOBILE ─── */}
-      <div className="mobile-home-header">
-        <Link to="/" className="logo">TRY<span>ON</span></Link>
-        <div className="header-actions">
-          {/* Notifications ou Connexion */}
-          {isAuthenticated ? (
-            <Link to="/notifications" aria-label="Notifications">
-              🔔
-              {unreadCount > 0 && <span className="notif-dot" />}
-            </Link>
-          ) : (
-            <Link to="/auth" aria-label="Connexion">👤</Link>
-          )}
-          {/* Panier */}
-          <Link to="/cart" aria-label="Panier" style={{ position: 'relative' }}>
-            <ShoppingCart size={20} />
-            {count > 0 && <span className="cart-badge-mobile">{count}</span>}
-          </Link>
-        </div>
-      </div>
 
       <style>{mobileStyles}</style>
 
