@@ -704,26 +704,6 @@ export default function Home() {
         }
       `}</style>
 
-      {/* ─── EN-TÊTE MOBILE ─── */}
-      <div className="mobile-home-header">
-        <Link to="/" className="logo">TRY<span>ON</span></Link>
-        <div className="header-actions">
-          {/* Panier */}
-          <Link to="/cart" aria-label="Panier" style={{ position: 'relative' }}>
-            <ShoppingCart size={20} />
-            {count > 0 && <span className="cart-badge-mobile">{count}</span>}
-          </Link>
-          {/* Notifications ou Connexion */}
-          {isAuthenticated ? (
-            <Link to="/notifications" aria-label="Notifications" style={{ position: 'relative' }}>
-              🔔
-              {unreadCount > 0 && <span className="notif-dot" />}
-            </Link>
-          ) : (
-            <Link to="/auth" aria-label="Connexion">👤</Link>
-          )}
-        </div>
-      </div>
 
       <style>{mobileStyles}</style>
 
