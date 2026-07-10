@@ -33,7 +33,8 @@ import DashboardSkeleton from "./components/DashboardSkeleton";
 import {
   LayoutDashboard, Package, Shirt, Users, Sparkles, TrendingUp,
   Star, BarChart3, Boxes, Tag, CreditCard, Bell, HelpCircle,
-  ShieldCheck, Settings, Search, LogOut
+  ShieldCheck, Settings, Search, LogOut,
+  Eye, Edit, Trash2, Download, X
 } from 'lucide-react';
 
 
@@ -390,7 +391,7 @@ const AdvancedSearch = React.memo(({ onSearch, onClose }) => {
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
           <h3><Search size={18} style={{display:'inline',verticalAlign:'middle',marginRight:6}} /> Recherche avancée</h3>
-          <button className="close" onClick={onClose}>✕</button>
+          <button className="close" onClick={onClose}><X size={18} /></button>
         </div>
         <div className="modal-body">
           <div className="field">
@@ -529,8 +530,8 @@ const ExportModal = React.memo(({ onExport, onClose, orders }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
-          <h3>📤 Exporter les données</h3>
-          <button className="close" onClick={onClose}>✕</button>
+          <h3><Download size={18} style={{display:'inline',verticalAlign:'middle',marginRight:6}} /> Exporter les données</h3>
+          <button className="close" onClick={onClose}><X size={18} /></button>
         </div>
         <div className="modal-body">
           <div className="field">
@@ -581,7 +582,7 @@ const ExportModal = React.memo(({ onExport, onClose, orders }) => {
           </div>
           <div className="modal-foot">
             <button className="btn btn-light" onClick={onClose}>Annuler</button>
-            <button className="btn btn-red" onClick={handleExport}>📥 Exporter</button>
+            <button className="btn btn-red" onClick={handleExport}><Download size={15} style={{display:'inline',verticalAlign:'middle',marginRight:4}} /> Exporter</button>
           </div>
         </div>
       </div>
@@ -592,7 +593,7 @@ const ExportModal = React.memo(({ onExport, onClose, orders }) => {
 const ProductCard = React.memo(({ product, onView, onEdit, onDelete }) => {
   return (
     <div className="card product-card-admin">
-      <div className="product-img">{product.emoji}</div>
+      <div className="product-img"><Shirt size={32} /></div>
       <div>
         <h3>{product.name}</h3>
         <p className="muted">{product.brand} · {product.cat}</p>
@@ -610,9 +611,9 @@ const ProductCard = React.memo(({ product, onView, onEdit, onDelete }) => {
       </div>
       <div className="product-actions-admin">
         <div className="actions">
-          <button className="icon-btn view" title="Voir" onClick={() => onView("product", product)}>👁️</button>
-          <button className="icon-btn" title="Modifier" onClick={() => onEdit("product", product)}>✏️</button>
-          <button className="icon-btn danger" title="Supprimer" onClick={() => onDelete("product", product.id)}>🗑️</button>
+          <button className="icon-btn view" title="Voir" onClick={() => onView("product", product)}><Eye size={14} /></button>
+          <button className="icon-btn" title="Modifier" onClick={() => onEdit("product", product)}><Edit size={14} /></button>
+          <button className="icon-btn danger" title="Supprimer" onClick={() => onDelete("product", product.id)}><Trash2 size={14} /></button>
         </div>
       </div>
     </div>
@@ -652,7 +653,7 @@ const Sales = React.memo(({ runExport, orders = [], products = [] }) => {
       <div className="card sales-card">
         <div className="card-title">
           <h3>Rapport commercial</h3>
-          <button className="btn btn-red" onClick={() => runExport("pdf")}>Exporter PDF</button>
+          <button className="btn btn-red" onClick={() => runExport("pdf")}><Download size={15} style={{display:'inline',verticalAlign:'middle',marginRight:4}} /> Exporter PDF</button>
         </div>
         {data.categories.length ? data.categories.map((category) => (
           <HBar key={category.label} label={category.label} width={category.width} value={category.value} />
@@ -687,7 +688,7 @@ const Modal = React.memo(({ modal, close, save, loading }) => {
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
           <h3>{isEdit ? "Modifier" : "Ajouter"} {getTypeLabel()}</h3>
-          <button className="close" onClick={close}>✕</button>
+          <button className="close" onClick={close}><X size={18} /></button>
         </div>
 
         <form className="modal-body" onSubmit={save}>
@@ -752,7 +753,6 @@ const Modal = React.memo(({ modal, close, save, loading }) => {
                 name="image"
                 accept="image/*"
               />
-              <Field label="Emoji" name="emoji" defaultValue={item.emoji || "👗"} />
               <div className="card soft-card">
                 <h4>Tailles et stocks</h4>
 
@@ -999,7 +999,7 @@ const ViewModal = React.memo(({ view, close }) => {
         <div className="modal-box view-modal" onClick={(e) => e.stopPropagation()}>
           <div className="modal-head">
             <h3>Détails {getTypeLabel()}</h3>
-            <button className="close" onClick={close}>✕</button>
+            <button className="close" onClick={close}><X size={18} /></button>
           </div>
 
           <div className="modal-body">
@@ -1050,7 +1050,7 @@ const ViewModal = React.memo(({ view, close }) => {
       <div className="modal-box view-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
           <h3>Détails {getTypeLabel()}</h3>
-          <button className="close" onClick={close}>✕</button>
+          <button className="close" onClick={close}><X size={18} /></button>
         </div>
 
         <div className="modal-body">
@@ -1299,7 +1299,6 @@ function Dashboard() {
 
         cat: p.target || p.categoryName || p.categorySlug || "Catalogue",
         image: p.image,
-        emoji: "👗",
       }));
 
       // ESSAYAGES
@@ -2613,7 +2612,7 @@ function Dashboard() {
               onClick={toggleMobileMenu}
               aria-label="Fermer le menu"
             >
-              ✕
+              <X size={18} />
             </button>
             <button 
               className="collapse-btn" 
@@ -2639,7 +2638,7 @@ function Dashboard() {
                   onClick={() => handleNavClick(item.key)} 
                   title={collapsed ? item.label : ""}
                 >
-                  <span className="ico">{item.icon}</span>
+                  <span className="ico"><item.Icon size={20} /></span>
                   <span className="nav-label">{item.label}</span>
                   {item.key === "notifications" && kpi.unreadNotifs > 0 && (
                     <span className="badge-notif">{kpi.unreadNotifs}</span>
@@ -2713,7 +2712,7 @@ function Dashboard() {
               aria-label="Recherche"
             />
             <button className="btn btn-light" onClick={() => setSearchModal(true)} title="Recherche avancée (Ctrl+Shift+F)"><Search size={15} style={{display:'inline',verticalAlign:'middle',marginRight:4}} /> Avancée</button>
-            <button className="btn btn-red" onClick={() => setExportModal(true)} title="Export avancé (Ctrl+E)">📤 Export</button>
+            <button className="btn btn-red" onClick={() => setExportModal(true)} title="Export avancé (Ctrl+E)"><Download size={15} style={{display:'inline',verticalAlign:'middle',marginRight:4}} /> Export</button>
           </div>
         </header>
 
