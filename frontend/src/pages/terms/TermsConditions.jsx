@@ -1,10 +1,30 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import MobileHeader from '../../components/layout/MobileHeader';
+
+// ─── ICÔNES LUCIDE ───
+import {
+  ChevronLeft,
+  FileText,
+  Home,
+  Check,
+  Shield,
+  ShoppingBag,
+  Truck,
+  CreditCard,
+  Package,
+  RotateCcw,
+  Scale,
+  Mail,
+  Phone,
+  MapPin,
+  AlertTriangle,
+} from 'lucide-react';
 
 const sections = [
   {
     title: '1. Acceptation des Conditions',
+    icon: Check,
     content: (
       <>
         <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
@@ -23,22 +43,19 @@ const sections = [
   },
   {
     title: '2. Produits et Prix',
+    icon: ShoppingBag,
     content: (
       <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-          Les caractéristiques des produits sont décrites avec la plus grande exactitude possible. Les couleurs peuvent varier légèrement selon votre écran.
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          Les caractéristiques des produits sont décrites avec la plus grande exactitude possible.
         </li>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
           Tous les prix sont indiqués en FCFA et sont ceux en vigueur au moment de la commande.
         </li>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-          Nous nous réservons le droit de modifier nos prix à tout moment, mais les produits seront facturés sur la base des tarifs en vigueur lors de l'enregistrement de la commande.
-        </li>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
           Les produits demeurent la propriété de TryOn jusqu'au paiement complet du prix.
         </li>
       </ul>
@@ -46,25 +63,26 @@ const sections = [
   },
   {
     title: '3. Commande',
+    icon: Package,
     content: (
       <ol className="static-ol" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', counterReset: 'step-counter' }}>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65', counterIncrement: 'step-counter' }}>
+        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
           <span style={{ minWidth: '26px', height: '26px', borderRadius: '50%', background: '#355C86', color: '#fff', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>1</span>
           Sélectionnez les produits souhaités et ajoutez-les à votre panier.
         </li>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65', counterIncrement: 'step-counter' }}>
+        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
           <span style={{ minWidth: '26px', height: '26px', borderRadius: '50%', background: '#355C86', color: '#fff', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>2</span>
           Identifiez-vous ou créez un compte après validation du panier.
         </li>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65', counterIncrement: 'step-counter' }}>
+        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
           <span style={{ minWidth: '26px', height: '26px', borderRadius: '50%', background: '#355C86', color: '#fff', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>3</span>
           Choisissez votre adresse de livraison et votre mode de paiement.
         </li>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65', counterIncrement: 'step-counter' }}>
+        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
           <span style={{ minWidth: '26px', height: '26px', borderRadius: '50%', background: '#355C86', color: '#fff', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>4</span>
           Vérifiez le détail de votre commande et son prix total avant de finaliser.
         </li>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65', counterIncrement: 'step-counter' }}>
+        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
           <span style={{ minWidth: '26px', height: '26px', borderRadius: '50%', background: '#355C86', color: '#fff', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>5</span>
           La confirmation de la commande entraîne acceptation des présentes CGV et forme le contrat de vente.
         </li>
@@ -73,22 +91,19 @@ const sections = [
   },
   {
     title: '4. Paiement',
+    icon: CreditCard,
     content: (
       <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-          Nous acceptons les paiements par carte bancaire (Visa, MasterCard), mobile money (MTN, Orange) et virement bancaire.
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          Nous acceptons les paiements par carte bancaire, mobile money et virement bancaire.
         </li>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
           Le paiement est exigible immédiatement à la commande.
         </li>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-          Nous ne sommes pas responsables des échecs de transaction liés à des problèmes techniques ou à l'insuffisance de fonds.
-        </li>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
           Toutes les transactions sont sécurisées et chiffrées via la technologie SSL.
         </li>
       </ul>
@@ -96,44 +111,27 @@ const sections = [
   },
   {
     title: '5. Livraison',
+    icon: Truck,
     content: (
       <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
           Les produits sont livrés à l'adresse indiquée lors de la commande.
         </li>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-          Les délais de livraison sont des estimations et peuvent varier selon la disponibilité et les contraintes logistiques.
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          Les délais de livraison sont des estimations et peuvent varier selon la disponibilité.
         </li>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-          En cas de retard supérieur à 7 jours ouvrés, vous pouvez annuler votre commande et obtenir un remboursement complet.
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          En cas de retard supérieur à 7 jours ouvrés, vous pouvez annuler votre commande.
         </li>
       </ul>
     )
   },
   {
-    title: '6. Réception et Réclamations',
-    content: (
-      <ol className="static-ol" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', counterReset: 'step-counter' }}>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65', counterIncrement: 'step-counter' }}>
-          <span style={{ minWidth: '26px', height: '26px', borderRadius: '50%', background: '#355C86', color: '#fff', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>1</span>
-          Il appartient au client de vérifier l'état du produit livré.
-        </li>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65', counterIncrement: 'step-counter' }}>
-          <span style={{ minWidth: '26px', height: '26px', borderRadius: '50%', background: '#355C86', color: '#fff', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>2</span>
-          Vous disposez de 48 heures à compter de la livraison pour formuler des réserves par email ou téléphone en cas de produit manquant ou dégradé.
-        </li>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65', counterIncrement: 'step-counter' }}>
-          <span style={{ minWidth: '26px', height: '26px', borderRadius: '50%', background: '#355C86', color: '#fff', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>3</span>
-          Aucune réclamation ne pourra être acceptée en cas de non-respect de ces formalités et délais.
-        </li>
-      </ol>
-    )
-  },
-  {
-    title: '7. Droit de Rétractation et Retours',
+    title: '6. Droit de Rétractation et Retours',
+    icon: RotateCcw,
     content: (
       <>
         <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
@@ -151,101 +149,39 @@ const sections = [
     )
   },
   {
-    title: '8. Garantie',
+    title: '7. Garantie',
+    icon: Shield,
     content: (
       <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-          Les produits bénéficient de la garantie légale de conformité et de la garantie contre les vices cachés.
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          Les produits bénéficient de la garantie légale de conformité.
         </li>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
           Pour bénéficier de la garantie, conservez votre facture d'achat.
         </li>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-          La garantie ne couvre pas les dommages résultant d'une utilisation anormale ou non conforme du produit.
-        </li>
       </ul>
     )
   },
   {
-    title: '9. Propriété Intellectuelle',
-    content: (
-      <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
-        Tous les éléments du site TryOn sont protégés par le droit d'auteur, des marques ou des brevets. Toute reproduction totale ou partielle sans autorisation expresse est interdite.
-      </p>
-    )
-  },
-  {
-    title: '10. Responsabilité',
+    title: '8. Contact',
+    icon: Mail,
     content: (
       <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-          TryOn ne pourra être tenue responsable des dommages directs et indirects causés lors de l'accès au site.
-        </li>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-          TryOn décline toute responsabilité quant au contenu des sites tiers vers lesquels elle propose des liens.
-        </li>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-          La responsabilité de TryOn sera limitée au montant de la commande.
-        </li>
-      </ul>
-    )
-  },
-  {
-    title: '11. Données Personnelles',
-    content: (
-      <>
-        <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
-          La collecte et le traitement de vos données personnelles sont effectués conformément à notre Politique de Confidentialité.
-        </p>
-        <div className="static-note" style={{
-          fontSize: '0.875rem', color: '#6A6F78', fontStyle: 'italic',
-          padding: '1rem 1.25rem', background: 'rgba(53,92,134,0.05)',
-          borderRadius: '10px', borderLeft: '3px solid rgba(53,92,134,0.25)',
-          marginTop: '1rem'
-        }}>
-          Pour plus d'informations, consultez notre <Link to="/privacy-policy" style={{ color: '#355C86' }}>Politique de Confidentialité</Link>.
-        </div>
-      </>
-    )
-  },
-  {
-    title: '12. Loi Applicable et Juridiction',
-    content: (
-      <>
-        <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
-          Les présentes CGV sont régies par la loi camerounaise.
-        </p>
-        <div className="static-note" style={{
-          fontSize: '0.875rem', color: '#6A6F78', fontStyle: 'italic',
-          padding: '1rem 1.25rem', background: 'rgba(53,92,134,0.05)',
-          borderRadius: '10px', borderLeft: '3px solid rgba(53,92,134,0.25)',
-          marginTop: '1rem'
-        }}>
-          En cas de litige et à défaut de résolution amiable, le tribunal compétent sera celui du siège social de TryOn à Douala, Cameroun.
-        </div>
-      </>
-    )
-  },
-  {
-    title: '13. Contact',
-    content: (
-      <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-        <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <Mail size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
           Email : <strong>legal@tryon.cm</strong>
         </li>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <MapPin size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
           Adresse : TryOn, Douala, Cameroun
         </li>
         <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-          <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+          <Phone size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
           Téléphone : +237 671 207 375
         </li>
       </ul>
@@ -254,6 +190,8 @@ const sections = [
 ];
 
 export default function TermsConditions() {
+  const navigate = useNavigate();
+
   return (
     <div className="static-page" style={{ paddingTop: '72px', minHeight: '100vh', background: '#F9F9F9' }}>
       <MobileHeader />
@@ -262,6 +200,7 @@ export default function TermsConditions() {
           .static-hero { padding: 3rem 1.5rem 2.5rem !important; }
           .static-hero-title { font-size: clamp(1.8rem, 3.5vw, 2.8rem) !important; }
           .static-main { padding: 2.5rem 1.5rem 2rem !important; }
+          .static-back-btn { width: 40px !important; height: 40px !important; }
         }
         @media (max-width: 640px) {
           .static-page { padding-top: 0 !important; }
@@ -278,6 +217,7 @@ export default function TermsConditions() {
           .static-cta-title { font-size: 1.6rem !important; }
           .static-cta-sub { font-size: 0.9rem !important; }
           .static-cta-btn { padding: 0.75rem 1.5rem !important; font-size: 11px !important; }
+          .static-back-btn { width: 36px !important; height: 36px !important; }
         }
         @media (max-width: 420px) {
           .static-hero { padding: 1.5rem 0.75rem 1.25rem !important; }
@@ -286,23 +226,71 @@ export default function TermsConditions() {
           .static-h2 { font-size: 1.2rem !important; }
           .static-cta { padding: 2rem 1rem !important; }
           .static-cta-title { font-size: 1.3rem !important; }
+          .static-back-btn { width: 32px !important; height: 32px !important; }
+        }
+        .static-ul {
+          list-style: none !important;
+          padding: 0 !important;
+        }
+        .static-ul li {
+          list-style: none !important;
+        }
+        .static-ol {
+          list-style: none !important;
+          padding: 0 !important;
+          counter-reset: step-counter;
+        }
+        .static-ol li {
+          list-style: none !important;
+          counter-increment: step-counter;
+        }
+        .static-ol li::before {
+          content: counter(step-counter);
+          min-width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          background: #355C86;
+          color: #fff;
+          font-size: 12px;
+          font-weight: 700;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          margin-right: 12px;
         }
       `}</style>
 
       <section className="static-hero" style={{
         background: 'linear-gradient(135deg, #EEF3F8 0%, #DDE8F3 100%)',
         padding: '5rem 2rem 4rem', textAlign: 'center',
-        borderBottom: '1px solid rgba(0,0,0,0.08)'
+        borderBottom: '1px solid rgba(0,0,0,0.08)',
+        position: 'relative'
       }}>
+        <button 
+          className="static-back-btn"
+          onClick={() => navigate(-1)}
+          style={{
+            position: 'absolute', top: '20px', left: '20px',
+            width: '44px', height: '44px', borderRadius: '14px',
+            border: '1px solid rgba(0,0,0,0.08)', background: '#fff',
+            cursor: 'pointer', boxShadow: '0 3px 14px rgba(0,0,0,0.06)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}
+        >
+          <ChevronLeft size={22} strokeWidth={2} />
+        </button>
+
         <div className="static-hero-badge" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '6px',
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
           background: 'rgba(53,92,134,0.09)', color: '#26384D',
           border: '1px solid rgba(53,92,134,0.14)',
           fontSize: '10px', fontWeight: 600, letterSpacing: '2px',
-          textTransform: 'uppercase', padding: '4px 14px',
+          textTransform: 'uppercase', padding: '6px 16px',
           borderRadius: '50px', marginBottom: '1.25rem'
         }}>
-          📋 CGV
+          <FileText size={14} strokeWidth={2} />
+          CGV
         </div>
         <h1 className="static-hero-title" style={{
           fontFamily: "'Cormorant Garamond', serif",
@@ -321,18 +309,23 @@ export default function TermsConditions() {
       </section>
 
       <main className="static-main" style={{ maxWidth: '900px', margin: '0 auto', padding: '4rem 2rem 3rem' }}>
-        {sections.map((s, i) => (
-          <section key={s.title} className={i < sections.length - 1 ? 'static-section' : ''} style={i < sections.length - 1 ? { marginBottom: '3.5rem', paddingBottom: '3.5rem', borderBottom: '1px solid rgba(0,0,0,0.08)' } : {}}>
-            <h2 className="static-h2" style={{
-              fontFamily: "'Cormorant Garamond', serif", fontSize: '1.75rem',
-              fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
-              paddingLeft: '1rem', borderLeft: '3px solid #355C86'
-            }}>
-              {s.title}
-            </h2>
-            {s.content}
-          </section>
-        ))}
+        {sections.map((s, i) => {
+          const Icon = s.icon;
+          return (
+            <section key={s.title} className={i < sections.length - 1 ? 'static-section' : ''} style={i < sections.length - 1 ? { marginBottom: '3.5rem', paddingBottom: '3.5rem', borderBottom: '1px solid rgba(0,0,0,0.08)' } : {}}>
+              <h2 className="static-h2" style={{
+                fontFamily: "'Cormorant Garamond', serif", fontSize: '1.75rem',
+                fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
+                paddingLeft: '1rem', borderLeft: '3px solid #355C86',
+                display: 'flex', alignItems: 'center', gap: '10px'
+              }}>
+                <Icon size={20} strokeWidth={1.8} />
+                {s.title}
+              </h2>
+              {s.content}
+            </section>
+          );
+        })}
       </main>
 
       <section className="static-cta" style={{
@@ -346,7 +339,7 @@ export default function TermsConditions() {
           Achetez en toute confiance
         </h2>
         <p className="static-cta-sub" style={{ fontSize: '1rem', opacity: 0.7, marginBottom: '2.5rem' }}>
-          Nos CGV sont claires, équitables et conçues pour protéger vos droits en tant que consommateur.
+          Nos CGV sont claires, équitables et conçues pour protéger vos droits.
         </p>
         <Link to="/" className="static-cta-btn" style={{
           display: 'inline-flex', alignItems: 'center', gap: '10px',
@@ -356,7 +349,8 @@ export default function TermsConditions() {
           textDecoration: 'none', transition: 'all 0.25s ease',
           boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
         }}>
-          🏠 Retourner à l'accueil
+          <Home size={16} strokeWidth={2} />
+          Retourner à l'accueil
         </Link>
       </section>
     </div>

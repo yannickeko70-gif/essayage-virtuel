@@ -1,10 +1,26 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import MobileHeader from '../../components/layout/MobileHeader';
+
+// ─── ICÔNES LUCIDE ───
+import {
+  ChevronLeft,
+  Truck,
+  MapPin,
+  Clock,
+  Home,
+  Package,
+  Check,
+  AlertCircle,
+  Phone,
+  Mail,
+} from 'lucide-react';
 
 const zones = ['Douala et ses environs', 'Yaoundé et ses environs', 'Bafoussam', 'Garoua', 'Maroua', 'Bamenda', 'Toutes les autres régions camerounaises'];
 
 export default function Shipping() {
+  const navigate = useNavigate();
+
   return (
     <div className="static-page" style={{ paddingTop: '72px', minHeight: '100vh', background: '#F9F9F9' }}>
       <MobileHeader />
@@ -14,6 +30,7 @@ export default function Shipping() {
           .static-hero-title { font-size: clamp(1.8rem, 3.5vw, 2.8rem) !important; }
           .static-main { padding: 2.5rem 1.5rem 2rem !important; }
           .static-grid-2 { grid-template-columns: 1fr !important; }
+          .static-back-btn { width: 40px !important; height: 40px !important; }
         }
         @media (max-width: 640px) {
           .static-page { padding-top: 0 !important; }
@@ -30,6 +47,7 @@ export default function Shipping() {
           .static-cta-title { font-size: 1.6rem !important; }
           .static-cta-sub { font-size: 0.9rem !important; }
           .static-cta-btn { padding: 0.75rem 1.5rem !important; font-size: 11px !important; }
+          .static-back-btn { width: 36px !important; height: 36px !important; }
         }
         @media (max-width: 420px) {
           .static-hero { padding: 1.5rem 0.75rem 1.25rem !important; }
@@ -39,23 +57,47 @@ export default function Shipping() {
           .static-card { padding: 1rem !important; }
           .static-cta { padding: 2rem 1rem !important; }
           .static-cta-title { font-size: 1.3rem !important; }
+          .static-back-btn { width: 32px !important; height: 32px !important; }
+        }
+        .static-ul {
+          list-style: none !important;
+          padding: 0 !important;
+        }
+        .static-ul li {
+          list-style: none !important;
         }
       `}</style>
 
       <section className="static-hero" style={{
         background: 'linear-gradient(135deg, #EEF3F8 0%, #DDE8F3 100%)',
         padding: '5rem 2rem 4rem', textAlign: 'center',
-        borderBottom: '1px solid rgba(0,0,0,0.08)'
+        borderBottom: '1px solid rgba(0,0,0,0.08)',
+        position: 'relative'
       }}>
+        <button 
+          className="static-back-btn"
+          onClick={() => navigate(-1)}
+          style={{
+            position: 'absolute', top: '20px', left: '20px',
+            width: '44px', height: '44px', borderRadius: '14px',
+            border: '1px solid rgba(0,0,0,0.08)', background: '#fff',
+            cursor: 'pointer', boxShadow: '0 3px 14px rgba(0,0,0,0.06)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}
+        >
+          <ChevronLeft size={22} strokeWidth={2} />
+        </button>
+
         <div className="static-hero-badge" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '6px',
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
           background: 'rgba(53,92,134,0.09)', color: '#26384D',
           border: '1px solid rgba(53,92,134,0.14)',
           fontSize: '10px', fontWeight: 600, letterSpacing: '2px',
-          textTransform: 'uppercase', padding: '4px 14px',
+          textTransform: 'uppercase', padding: '6px 16px',
           borderRadius: '50px', marginBottom: '1.25rem'
         }}>
-          🚚 Livraison
+          <Truck size={14} strokeWidth={2} />
+          Livraison
         </div>
         <h1 className="static-hero-title" style={{
           fontFamily: "'Cormorant Garamond', serif",
@@ -74,21 +116,20 @@ export default function Shipping() {
       </section>
 
       <main className="static-main" style={{ maxWidth: '900px', margin: '0 auto', padding: '4rem 2rem 3rem' }}>
+        {/* Zones */}
         <section className="static-section" style={{ marginBottom: '3.5rem', paddingBottom: '3.5rem', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <h2 className="static-h2" style={{
             fontFamily: "'Cormorant Garamond', serif", fontSize: '1.75rem',
             fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
             paddingLeft: '1rem', borderLeft: '3px solid #355C86'
           }}>
+            <MapPin size={20} style={{ display: 'inline', marginRight: '10px', verticalAlign: 'middle' }} />
             Zones de Livraison
           </h2>
-          <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
-            Nous livrons actuellement dans toutes les régions du Cameroun :
-          </p>
           <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             {zones.map(z => (
               <li key={z} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-                <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
                 {z}
               </li>
             ))}
@@ -99,16 +140,19 @@ export default function Shipping() {
             borderRadius: '10px', borderLeft: '3px solid rgba(53,92,134,0.25)',
             marginTop: '1rem'
           }}>
+            <Package size={14} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
             Pour les livraisons internationales, veuillez nous contacter directement.
           </div>
         </section>
 
+        {/* Délais */}
         <section className="static-section" style={{ marginBottom: '3.5rem', paddingBottom: '3.5rem', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <h2 className="static-h2" style={{
             fontFamily: "'Cormorant Garamond', serif", fontSize: '1.75rem',
             fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
             paddingLeft: '1rem', borderLeft: '3px solid #355C86'
           }}>
+            <Clock size={20} style={{ display: 'inline', marginRight: '10px', verticalAlign: 'middle' }} />
             Délais de Livraison
           </h2>
           <div className="static-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
@@ -122,7 +166,8 @@ export default function Shipping() {
                 fontWeight: 600, color: '#1A1A1A', marginBottom: '0.75rem',
                 display: 'flex', alignItems: 'center', gap: '0.5rem'
               }}>
-                🚚 Livraison Standard
+                <Truck size={20} strokeWidth={1.8} />
+                Livraison Standard
               </div>
               <p className="static-card-text" style={{ fontSize: '0.9375rem', color: '#6A6F78', lineHeight: '1.65' }}>
                 3–5 jours ouvrables pour les principales villes
@@ -141,7 +186,8 @@ export default function Shipping() {
                 fontWeight: 600, color: '#1A1A1A', marginBottom: '0.75rem',
                 display: 'flex', alignItems: 'center', gap: '0.5rem'
               }}>
-                ⚡ Livraison Express
+                <Clock size={20} strokeWidth={1.8} />
+                Livraison Express
               </div>
               <p className="static-card-text" style={{ fontSize: '0.9375rem', color: '#6A6F78', lineHeight: '1.65' }}>
                 1–2 jours ouvrables pour Douala et Yaoundé
@@ -153,6 +199,7 @@ export default function Shipping() {
           </div>
         </section>
 
+        {/* Frais */}
         <section className="static-section" style={{ marginBottom: '3.5rem', paddingBottom: '3.5rem', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <h2 className="static-h2" style={{
             fontFamily: "'Cormorant Garamond', serif", fontSize: '1.75rem',
@@ -169,7 +216,8 @@ export default function Shipping() {
                 fontFamily: "'Cormorant Garamond', serif", fontSize: '1.2rem',
                 fontWeight: 600, color: '#355C86', marginBottom: '0.75rem'
               }}>
-                🚚 Standard
+                <Truck size={18} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
+                Standard
               </div>
               <p className="static-card-text" style={{ fontWeight: 600, color: '#1A1A1A', marginBottom: '0.5rem', fontSize: '0.9375rem', lineHeight: '1.65' }}>
                 Gratuite pour les commandes &gt; 50 000 FCFA
@@ -185,7 +233,8 @@ export default function Shipping() {
                 fontFamily: "'Cormorant Garamond', serif", fontSize: '1.2rem',
                 fontWeight: 600, color: '#355C86', marginBottom: '0.75rem'
               }}>
-                ⚡ Express
+                <Clock size={18} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
+                Express
               </div>
               <p className="static-card-text" style={{ fontWeight: 600, color: '#1A1A1A', marginBottom: '0.5rem', fontSize: '0.9375rem', lineHeight: '1.65' }}>
                 1 500 FCFA pour toutes les commandes
@@ -197,12 +246,14 @@ export default function Shipping() {
           </div>
         </section>
 
+        {/* Suivi */}
         <section className="static-section" style={{ marginBottom: '3.5rem', paddingBottom: '3.5rem', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
           <h2 className="static-h2" style={{
             fontFamily: "'Cormorant Garamond', serif", fontSize: '1.75rem',
             fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
             paddingLeft: '1rem', borderLeft: '3px solid #355C86'
           }}>
+            <Check size={20} style={{ display: 'inline', marginRight: '10px', verticalAlign: 'middle' }} />
             Suivi de Commande
           </h2>
           <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
@@ -210,29 +261,26 @@ export default function Shipping() {
           </p>
         </section>
 
+        {/* Problèmes */}
         <section>
           <h2 className="static-h2" style={{
             fontFamily: "'Cormorant Garamond', serif", fontSize: '1.75rem',
             fontWeight: 600, color: '#1A1A1A', marginBottom: '1.25rem',
             paddingLeft: '1rem', borderLeft: '3px solid #355C86'
           }}>
+            <AlertCircle size={20} style={{ display: 'inline', marginRight: '10px', verticalAlign: 'middle' }} />
             Retards et Problèmes de Livraison
           </h2>
-          <p className="static-p" style={{ fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.75', marginBottom: '1rem' }}>
-            En cas de retard ou de problème, notre service client est disponible pour vous aider :
-          </p>
           <ul className="static-ul" style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <Phone size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
               Par téléphone : +237 671 207 375
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
+              <Mail size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
               Par email : support@tryon.cm
-            </li>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem', color: '#6A6F78', lineHeight: '1.65' }}>
-              <span style={{ content: "''", width: '6px', height: '6px', borderRadius: '50%', background: '#355C86', flexShrink: 0, marginTop: '0.55rem' }} />
-              Via le chat en ligne sur notre site
             </li>
           </ul>
         </section>
@@ -259,7 +307,8 @@ export default function Shipping() {
           textDecoration: 'none', transition: 'all 0.25s ease',
           boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
         }}>
-          🛍️ Voir le catalogue
+          <Package size={16} strokeWidth={2} />
+          Voir le catalogue
         </Link>
       </section>
     </div>

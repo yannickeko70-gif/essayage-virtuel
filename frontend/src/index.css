@@ -708,3 +708,585 @@ footer {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+
+/* ============================================================
+   POLICES PREMIUM
+   ============================================================ */
+
+/* Cormorant Garamond — Élégance pour les titres et la marque */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+/* Inter — Moderne et ultra-lisible pour le corps de texte */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* DM Sans — Géométrique et précis pour l'interface */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
+
+/* ============================================================
+   VARIABLES GLOBALES
+   ============================================================ */
+
+:root {
+  /* ── TYPOGRAPHIE ── */
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-ui: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ── COULEURS PREMIUM ── */
+  --color-ink: #0A0A0A;
+  --color-ink-light: #1A1A1A;
+  --color-ink-mid: #2D2D2D;
+  --color-ink-soft: #4A4A4A;
+  --color-muted: #6A6F78;
+  --color-muted-light: #9CA3AF;
+  --color-cream: #F7F5F0;
+  --color-cream-light: #FAF8F5;
+  --color-white: #FFFFFF;
+  --color-border: rgba(10, 10, 10, 0.08);
+  --color-border-light: rgba(10, 10, 10, 0.04);
+
+  /* ── COULEURS D'ACCENT ── */
+  --color-red: #C0392B;
+  --color-red-dark: #8E241D;
+  --color-red-light: #E8D4D0;
+  --color-gold: #B8976C;
+  --color-gold-light: #D4C5A9;
+  --color-blue: #355C86;
+  --color-blue-dark: #26384D;
+  --color-blue-light: #E6EEF6;
+  --color-green: #2E7C4F;
+  --color-green-light: #EAF5F0;
+
+  /* ── OMBRES ── */
+  --shadow-sm: 0 2px 8px rgba(10, 10, 10, 0.04);
+  --shadow-md: 0 8px 24px rgba(10, 10, 10, 0.06);
+  --shadow-lg: 0 16px 48px rgba(10, 10, 10, 0.08);
+  --shadow-xl: 0 24px 64px rgba(10, 10, 10, 0.12);
+  --shadow-hover: 0 20px 60px rgba(10, 10, 10, 0.10);
+
+  /* ── BORDURES ── */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 999px;
+
+  /* ── ESPACEMENTS ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 80px;
+
+  /* ── TRANSITIONS ── */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.4s ease;
+}
+
+/* ============================================================
+   STYLES DE BASE
+   ============================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--color-ink-light);
+  background: var(--color-cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ============================================================
+   TITRES PREMIUM
+   ============================================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  color: var(--color-ink);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 300;
+}
+
+h2 {
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 300;
+}
+
+h3 {
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  font-weight: 400;
+}
+
+h4 {
+  font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+  font-weight: 500;
+}
+
+/* ============================================================
+   TITRES AVEC ACCENT
+   ============================================================ */
+
+.title-serif {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.title-serif-bold {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.title-serif-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+}
+
+.title-serif-accent {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  color: var(--color-red);
+  font-style: italic;
+}
+
+/* ============================================================
+   TEXTE PREMIUM
+   ============================================================ */
+
+.text-body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--color-ink-soft);
+}
+
+.text-body-large {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.8;
+  color: var(--color-ink-soft);
+}
+
+.text-body-small {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.text-muted {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--color-muted);
+  letter-spacing: 0.3px;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 500;
+}
+
+.text-small-uppercase {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: var(--color-muted);
+}
+
+/* ============================================================
+   UI & INTERFACE
+   ============================================================ */
+
+.ui-label {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  color: var(--color-muted);
+}
+
+.ui-button {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.ui-button-primary {
+  background: var(--color-ink);
+  color: var(--color-white);
+  padding: 16px 32px;
+  border-radius: var(--radius-md);
+}
+
+.ui-button-primary:hover {
+  background: var(--color-red);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.ui-button-secondary {
+  background: transparent;
+  color: var(--color-ink);
+  padding: 14px 28px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.ui-button-secondary:hover {
+  border-color: var(--color-ink);
+  transform: translateY(-2px);
+}
+
+.ui-button-red {
+  background: linear-gradient(135deg, var(--color-red), var(--color-red-dark));
+  color: var(--color-white);
+  padding: 16px 32px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 28px rgba(192, 57, 43, 0.15);
+}
+
+.ui-button-red:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(192, 57, 43, 0.22);
+}
+
+.ui-nav-link {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  position: relative;
+}
+
+.ui-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: var(--color-ink);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--transition-base);
+}
+
+.ui-nav-link:hover {
+  color: var(--color-ink);
+}
+
+.ui-nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* ============================================================
+   BADGES & TAGS
+   ============================================================ */
+
+.badge-premium {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-ink);
+  color: var(--color-white);
+}
+
+.badge-new {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(53, 92, 134, 0.12);
+  color: var(--color-blue);
+}
+
+.badge-sale {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(192, 57, 43, 0.12);
+  color: var(--color-red);
+}
+
+/* ============================================================
+   PRIX
+   ============================================================ */
+
+.price {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+}
+
+.price-large {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 32px;
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+}
+
+.price-small {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+.price-old {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--color-muted-light);
+  text-decoration: line-through;
+}
+
+.price-currency {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--color-muted);
+  margin-left: 2px;
+}
+
+/* ============================================================
+   CARTES PREMIUM
+   ============================================================ */
+
+.card-premium {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  overflow: hidden;
+}
+
+.card-premium:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-border);
+}
+
+.card-premium-dark {
+  background: var(--color-ink);
+  border-radius: var(--radius-lg);
+  color: var(--color-white);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* ============================================================
+   SECTIONS PREMIUM
+   ============================================================ */
+
+.section-hero {
+  padding: var(--space-3xl) var(--space-2xl);
+  background: var(--color-cream-light);
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+}
+
+.section-hero-dark {
+  padding: var(--space-3xl) var(--space-2xl);
+  background: var(--color-ink);
+  color: var(--color-white);
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+}
+
+.section-padding {
+  padding: var(--space-3xl) var(--space-2xl);
+}
+
+.section-padding-top {
+  padding-top: var(--space-3xl);
+}
+
+.section-padding-bottom {
+  padding-bottom: var(--space-3xl);
+}
+
+/* ============================================================
+   COMPOSANTS SPÉCIFIQUES
+   ============================================================ */
+
+/* ── Logo ── */
+.logo-premium {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(22px, 2.5vw, 32px);
+  letter-spacing: 4px;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.logo-premium span {
+  color: var(--color-red);
+}
+
+.logo-premium-dark {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(22px, 2.5vw, 32px);
+  letter-spacing: 4px;
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+.logo-premium-dark span {
+  color: var(--color-red);
+}
+
+/* ── Navbar ── */
+.nav-premium {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 40px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* ── Footer ── */
+.footer-premium {
+  background: var(--color-ink);
+  color: rgba(255, 255, 255, 0.6);
+  padding: var(--space-3xl) var(--space-2xl) var(--space-lg);
+}
+
+.footer-premium .footer-title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--color-white);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: var(--space-md);
+}
+
+.footer-premium .footer-link {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.footer-premium .footer-link:hover {
+  color: var(--color-white);
+}
+
+/* ============================================================
+   UTILITAIRES
+   ============================================================ */
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.text-ink { color: var(--color-ink); }
+.text-muted { color: var(--color-muted); }
+.text-red { color: var(--color-red); }
+.text-white { color: var(--color-white); }
+
+.bg-cream { background: var(--color-cream); }
+.bg-white { background: var(--color-white); }
+.bg-ink { background: var(--color-ink); }
+.bg-red { background: var(--color-red); }
+
+.gap-xs { gap: var(--space-xs); }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.gap-lg { gap: var(--space-lg); }
+.gap-xl { gap: var(--space-xl); }
+
+.p-md { padding: var(--space-md); }
+.p-lg { padding: var(--space-lg); }
+.p-xl { padding: var(--space-xl); }
+
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.mt-xl { margin-top: var(--space-xl); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.mb-xl { margin-bottom: var(--space-xl); }
+
+.radius-sm { border-radius: var(--radius-sm); }
+.radius-md { border-radius: var(--radius-md); }
+.radius-lg { border-radius: var(--radius-lg); }
+.radius-xl { border-radius: var(--radius-xl); }
+.radius-full { border-radius: var(--radius-full); }
+
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+
+.transition { transition: all var(--transition-base); }
+.transition-slow { transition: all var(--transition-slow); }

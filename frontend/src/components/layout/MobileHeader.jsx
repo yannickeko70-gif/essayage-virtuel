@@ -1,8 +1,12 @@
+// src/components/layout/MobileHeader.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { adminService } from '../../services/adminService';
+
+// ─── ICÔNES LUCIDE ───
+import { ShoppingCart, Bell, User, Home, LogIn } from 'lucide-react';
 
 export default function MobileHeader() {
   const { isAuthenticated } = useAuth();
@@ -34,14 +38,16 @@ export default function MobileHeader() {
       <div className="mobile-header-actions">
         {isAuthenticated ? (
           <Link to="/notifications" className="mobile-header-icon" aria-label="Notifications">
-            🔔
+            <Bell size={20} strokeWidth={2} />
             {unreadCount > 0 && <span className="notif-dot" />}
           </Link>
         ) : (
-          <Link to="/auth" className="mobile-header-icon" aria-label="Connexion">👤</Link>
+          <Link to="/auth" className="mobile-header-icon" aria-label="Connexion">
+            <User size={20} strokeWidth={2} />
+          </Link>
         )}
         <Link to="/cart" className="mobile-header-icon" aria-label="Panier">
-          🛒
+          <ShoppingCart size={20} strokeWidth={2} />
           {count > 0 && <span className="cart-badge-mobile">{count}</span>}
         </Link>
       </div>
