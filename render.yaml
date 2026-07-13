@@ -1,0 +1,91 @@
+# Render Blueprint — déploie backend (Node) + ai_service (Python) en gratuit.
+# Utilisation : placez ce fichier à la racine de votre repo GitHub, puis sur
+# Render : New > Blueprint > sélectionnez le repo. Render détecte ce fichier
+# automatiquement. Les variables marquées "sync: false" doivent être saisies
+# manuellement dans le Dashboard Render après le premier déploiement.
+
+services:
+  - type: web
+    name: cfpd-tryon-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: DB_HOST
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: AI_SERVICE_URL
+        sync: false
+      - key: AI_TRYON_STRATEGY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CALLBACK_URL
+        sync: false
+      - key: BACKEND_URL
+        sync: false
+      - key: PAYDUNYA_MODE
+        sync: false
+      - key: PAYDUNYA_MASTER_KEY
+        sync: false
+      - key: PAYDUNYA_PRIVATE_KEY
+        sync: false
+      - key: PAYDUNYA_TOKEN
+        sync: false
+      - key: PAYDUNYA_PUBLIC_KEY
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+  - type: web
+    name: cfpd-tryon-ai-service
+    runtime: python
+    plan: free
+    rootDir: ai_service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: HF_TOKEN
+        sync: false
+      - key: HF_CATVTON_SPACE
+        value: zhengchong/CatVTON
+      - key: AI_NUM_STEPS
+        value: "30"
+      - key: FASHN_API_KEY
+        sync: false
+      - key: FASHN_BASE_URL
+        value: https://api.fashn.ai/v1
+      - key: AI_TRYON_STRATEGY
+        sync: false
+      - key: AI_DEBUG_FALLBACK
+        value: "false"
