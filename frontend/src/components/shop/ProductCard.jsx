@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function ProductCard({ product }) {
+  const { t } = useTranslation();
+
   return (
     <article className="product-card-wrap">
       {/* La carte = juste l'image */}
@@ -11,8 +14,8 @@ export default function ProductCard({ product }) {
         <div className="product-overlay" />
 
         <div className="product-actions">
-          <Link to={`/product/${product.id}`}>Voir</Link>
-          <Link to={`/tryon?productId=${product.id}`}>Essayer virtuellement</Link>
+          <Link to={`/product/${product.id}`}>{t('shop.productCard.view')}</Link>
+          <Link to={`/tryon?productId=${product.id}`}>{t('shop.productCard.tryOn')}</Link>
         </div>
       </div>
 
