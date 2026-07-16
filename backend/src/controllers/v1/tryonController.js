@@ -422,8 +422,9 @@ async function aiGenerateTryon(req, res) {
       });
     }
 
-    // ✅ L'image produit est une URL Cloudinary : on la transmet telle quelle.
-    //    aiTryonService sait charger une URL comme un fichier local (dev).
+    // ✅ CORRECTIF — l'image produit est une URL Cloudinary : on la transmet
+    //    telle quelle. aiTryonService sait charger une URL comme un fichier
+    //    local (utile en développement).
     const productImagePath = imageField;
 
     // req.file.path = URL Cloudinary fournie par multer-storage-cloudinary
