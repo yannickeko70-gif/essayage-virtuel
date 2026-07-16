@@ -1949,6 +1949,7 @@ const handleAITryon = async () => {
                     Voir la fiche produit
                   </Link>
                 </div>
+
               </div>
             </div>
           </div>
