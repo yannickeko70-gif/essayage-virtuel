@@ -14,6 +14,15 @@ import LoadingPage from '../../components/common/LoadingPage';
 
 import { Sparkles, Shirt, User, Camera as CameraIcon, Info } from 'lucide-react';
 
+
+function resolveImageUrl(url) {
+  if (!url) return null;
+  if (/^https?:\/\//i.test(url)) return url;
+  const base = (process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1')
+    .replace(/\/api(\/v1)?/, '');
+  return `${base}${url}`;
+}
+
 /* ── Constantes de style ── */
 const T = {
   ink: '#1A1A1A',
@@ -427,7 +436,7 @@ const [pageMessage, setPageMessage]   = useState(null); // { type: 'error'|'info
 
   /* ── 7. Ajout au panier ── */
   const resultFullUrl = () => aiResult && aiResult.resultImageUrl
-    ? `${(process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1').replace(/\/api(\/v1)?/, '')}${aiResult.resultImageUrl}`
+    ? resolveImageUrl(aiResult.resultImageUrl)
     : null;
 
   const handleDownload = async () => {
@@ -1407,7 +1416,7 @@ const handleAITryon = async () => {
                   /* Le vrai rendu IA est prêt : on affiche le résultat généré */
                   <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                     <img
-                      src={`${(process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1').replace(/\/api(\/v1)?/, '')}${aiResult.resultImageUrl}`}
+                      src={resolveImageUrl(aiResult.resultImageUrl)}
                       alt="Rendu de l'essayage"
                       style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#EEF1F5' }}
                       onError={(e) => { e.target.src = photoPreview; }}
@@ -1759,7 +1768,7 @@ const handleAITryon = async () => {
                     ) : aiResult && aiResult.resultImageUrl ? (
                       <>
                         <img
-                          src={`${(process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1').replace(/\/api(\/v1)?/, '')}${aiResult.resultImageUrl}`}
+                          src={resolveImageUrl(aiResult.resultImageUrl)}
                           alt="Résultat de l'essayage"
                           className="tryon-result-media"
                           style={{ width: '100%', objectFit: 'contain', background: '#EEF1F5', display: 'block' }}
