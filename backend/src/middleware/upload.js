@@ -42,12 +42,11 @@ const uploadTryonImage = (req, res, next) => {
   });
 };
 
-// ✅ NOUVEAU — essayage avec nom de champ libre ("photo", "tryonPhoto"…)
-//    Range les photos des clients dans tryon/tryons (et non tryon/products).
+// ✅ CORRECTIF BUG 1 — essayage avec nom de champ libre ("photo", "tryonPhoto"…)
+//    Range les photos des clients dans tryon/tryons, et non tryon/products.
 const uploadTryonSingle = makeSingle(uploadTryon);
 
-// Compatibilité avec les anciennes routes — ⚠️ storage PRODUIT
-// À n'utiliser que pour des images de produits.
+// ⚠️ storage PRODUIT — à réserver aux images du catalogue.
 const uploadSingle = makeSingle(uploadProduct);
 
 const uploadMultiple = (fieldName, maxCount) => {

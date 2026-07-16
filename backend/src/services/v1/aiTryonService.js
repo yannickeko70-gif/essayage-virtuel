@@ -20,7 +20,6 @@ function isUrl(value) {
  * service IA (le body arrive en Buffer car responseType: "arraybuffer").
  */
 function extractAiError(error) {
-  // Le service IA a répondu (ex: 502 avec un JSON { message })
   if (error.response && error.response.data) {
     try {
       const body = JSON.parse(Buffer.from(error.response.data).toString("utf8"));
@@ -40,8 +39,8 @@ function extractAiError(error) {
 }
 
 /**
- * Charge une image en Buffer, qu'elle vienne d'une URL Cloudinary (production)
- * ou d'un fichier local (développement).
+ * ✅ CORRECTIF BUG 3 — charge une image en Buffer, qu'elle vienne d'une URL
+ * Cloudinary (production) ou d'un fichier local (développement).
  */
 async function loadImage(source, label) {
   if (isUrl(source)) {
@@ -63,7 +62,7 @@ async function loadImage(source, label) {
   return fs.readFileSync(source);
 }
 
-/** Envoie l'image générée vers Cloudinary, dossier tryon/results. */
+/** ✅ CORRECTIF BUG 2 — envoie l'image générée vers Cloudinary (tryon/results). */
 function uploadResultToCloudinary(buffer) {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -106,8 +105,8 @@ async function generateWithCatVTON({ personImagePath, garmentImagePath }) {
     throw new Error("Le service IA a renvoyé une réponse invalide.");
   }
 
-  // ✅ Le résultat part sur Cloudinary (tryon/results) et non plus sur le
-  //    disque du serveur, qui est éphémère sur Render.
+  // Le résultat part sur Cloudinary et non plus sur le disque du serveur,
+  // qui est éphémère sur Render.
   let uploaded;
   try {
     uploaded = await uploadResultToCloudinary(Buffer.from(response.data));
