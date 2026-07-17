@@ -329,7 +329,10 @@ const [pageMessage, setPageMessage]   = useState(null); // { type: 'error'|'info
     setPoseLandmarks(null);
     setMeasurements(null);
     setStep(1);
-    measurePhoto(previewUrl);
+    // On lit la morphologie tout de suite (~1 s) pour qu'elle soit prête,
+    // mais on NE calcule PAS la taille ici : la reco est produite au
+    // lancement de l'essayage et présentée sur la page de résultats.
+    measurePhoto(previewUrl, true);
   };
 
   /* ── 3. Webcam ── */
@@ -640,6 +643,31 @@ const [pageMessage, setPageMessage]   = useState(null); // { type: 'error'|'info
   };
 
 /* ── Génération IA (version corrigée) ── */
+  /**
+   * Chaîne complète de recommandation, exécutée en arrière-plan au lancement.
+   * Renvoie null quand elle ne peut rien produire — sans jamais bloquer
+   * l'essayage : la taille est un plus, pas un péage.
+   */
+  const runSizeEngine = async () => {
+    // Sans taille ni poids, aucune conversion en centimètres n'est possible :
+    // une photo n'a pas d'échelle. On ne montre pas d'erreur, c'est facultatif.
+    if (!heightCm || !weightKg) return null;
+
+    let m = measurements;
+    if (!m) {
+      let src = photoPreview;
+      if (!src && useWebcam && videoRef.current) {
+        const canvas = document.createElement('canvas');
+        canvas.width = videoRef.current.videoWidth || 640;
+        canvas.height = videoRef.current.videoHeight || 480;
+        canvas.getContext('2d').drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        src = canvas.toDataURL('image/jpeg');
+      }
+      if (src) m = await measurePhoto(src, true);
+    }
+    return await loadFit(m); // m peut être null : reco taille + poids seuls
+  };
+
 const handleAITryon = async () => {
   if (!photo && !photoPreview) return;
   if (!product) return;
@@ -649,6 +677,15 @@ const handleAITryon = async () => {
   setAiError(null);
 
   try {
+    // ~1 s contre ~90 s pour CatVTON : on la joue avant, ce qui permet
+    // d'attacher la taille recommandée à l'essai enregistré. Un échec ici
+    // ne doit jamais empêcher la génération de l'image.
+    let fit = null;
+    try {
+      fit = await runSizeEngine();
+    } catch (e) {
+      console.warn('[runSizeEngine]', e);
+    }
     const formData = new FormData();
     formData.append('productId', product.id);
 
@@ -664,8 +701,12 @@ const handleAITryon = async () => {
       formData.append('tryonPhoto', blob, 'photo.jpg');
     }
 
-    if (score)           formData.append('score', String(score));
-    if (recommendedSize) formData.append('recommendedSize', recommendedSize);
+    // `recommendedSize` (l'état) est encore vide à ce stade : on prend la
+    // valeur que le moteur vient de renvoyer, sinon l'essai était enregistré
+    // sans aucune taille.
+    const sizeForRecord = fit?.recommendedSize || recommendedSize;
+    if (score)        formData.append('score', String(score));
+    if (sizeForRecord) formData.append('recommendedSize', sizeForRecord);
 
     // Le token est stocké dans localStorage par AuthContext (pas sessionStorage)
     const token = localStorage.getItem('tryon_token');
@@ -1740,8 +1781,33 @@ body: JSON.stringify({
                   <span>3. Votre taille</span>
                   <span style={{ fontSize: '10px', color: T.blueDark, textTransform: 'none', letterSpacing: 0, cursor: 'pointer', fontWeight: 500 }}>Guide →</span>
                 </div>
-                {/* Estimation : taille + poids + morphologie */}
-                <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
+
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                  {sizeOptions.map(s => (
+                    <button
+                      key={s}
+                      onClick={() => setSelectedSize(s)}
+                      style={{
+                        padding: '7px 13px',
+                        borderRadius: '8px',
+                        border: `1.5px solid ${selectedSize === s ? T.blueDark : T.border}`,
+                        background: selectedSize === s ? T.blueDark : 'transparent',
+                        color: selectedSize === s ? '#fff' : T.ink,
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Mesures : facultatives, mais c'est ce qui rend la reco possible */}
+                <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: T.muted, marginBottom: '8px' }}>
+                  Vos mesures — facultatif
+                </div>
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '8px', flexWrap: 'wrap' }}>
                   <input type="number" placeholder="Taille (cm)" value={heightCm}
                     onChange={(e) => setHeightCm(e.target.value)}
                     style={{ flex: '1 1 90px', minWidth: 0, padding: '7px 9px', borderRadius: '8px', border: `1.5px solid ${T.border}`, fontSize: '12px' }} />
@@ -1754,88 +1820,22 @@ body: JSON.stringify({
                     <option value="normale">Normale</option>
                     <option value="corpulent">Corpulent</option>
                   </select>
-                  <button onClick={() => loadFit()} disabled={fitLoading || measuring}
-                    style={{ flex: '1 1 100%', padding: '8px', borderRadius: '8px', border: 'none', background: T.blueDark, color: '#fff', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
-                    {fitLoading ? 'Calcul…' : 'Trouver ma taille'}
-                  </button>
                 </div>
 
-                {/* État de la photo : ce que le client gagne à en ajouter une */}
-                {measuring ? (
-                  <p style={{ fontSize: '11px', color: T.blueDark, margin: '0 0 8px', fontWeight: 500 }}>
-                    ⏳ Lecture de votre morphologie sur la photo…
-                  </p>
-                ) : measurements && measurements.quality !== 'bad' ? (
-                  <p style={{ fontSize: '11px', color: '#06D6A0', margin: '0 0 8px', fontWeight: 500 }}>
-                    📷 Votre photo est utilisée : carrure mesurée, taille affinée.
-                  </p>
-                ) : (photoPreview || webcamActive) ? (
-                  <p style={{ fontSize: '11px', color: T.blueDark, margin: '0 0 8px', lineHeight: 1.4 }}>
-                    📷 Photo prête : elle sera lue au calcul pour affiner votre carrure.
+                {/* Ce que le client gagne à remplir, et où il verra le résultat */}
+                {heightCm && weightKg ? (
+                  <p style={{ fontSize: '11px', color: '#06D6A0', margin: 0, lineHeight: 1.4, fontWeight: 500 }}>
+                    ✓ Votre taille idéale sera calculée pendant l'essayage
+                    {measurements && measurements.quality !== 'bad'
+                      ? ' à partir de votre carrure mesurée sur la photo.'
+                      : ' à partir de votre taille et de votre poids.'}
                   </p>
                 ) : (
-                  <p style={{ fontSize: '11px', color: T.muted, margin: '0 0 8px', lineHeight: 1.4 }}>
-                    💡 Pour plus de précision, ajoutez une photo de vous en pied et de face :
-                    nous mesurons votre carrure réelle au lieu de l'estimer.
+                  <p style={{ fontSize: '11px', color: T.muted, margin: 0, lineHeight: 1.4 }}>
+                    💡 Facultatif — mais sans votre taille et votre poids, nous ne pouvons
+                    pas convertir votre morphologie en centimètres. Renseignez-les et nous
+                    vous dirons quelle taille choisir, avec le résultat de l'essayage.
                   </p>
-                )}
-
-                {fitError && <p style={{ color: T.red, fontSize: '11px', margin: '0 0 8px' }}>{fitError}</p>}
-
-                {fitData && (
-                  <>
-                    <p style={{ fontSize: '12px', color: '#06D6A0', fontWeight: 600, margin: '0 0 4px' }}>
-                      ✓ Taille {fitData.recommendedSize} recommandée ({fitData.confidence}% de confiance)
-                      {fitData.photoUsed ? ' · photo + taille + poids' : ' · taille + poids'}
-                    </p>
-                    {fitData.photoNote && (
-                      <p style={{ fontSize: '10px', color: T.muted, margin: '0 0 8px' }}>{fitData.photoNote}</p>
-                    )}
-                  </>
-                )}
-
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                  {sizeOptions.map(s => {
-                    const f = fitOf(s);
-                    return (
-                      <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
-                        <button
-                          onClick={() => setSelectedSize(s)}
-                          style={{
-                            padding: '7px 13px',
-                            borderRadius: '8px',
-                            border: `1.5px solid ${selectedSize === s ? T.blueDark : (f ? FIT_COLOR[f.verdict] : T.border)}`,
-                            background: selectedSize === s ? T.blueDark : 'transparent',
-                            color: selectedSize === s ? '#fff' : T.ink,
-                            fontSize: '12px',
-                            fontWeight: 500,
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {s}
-                        </button>
-                        {f && (
-                          <span style={{ fontSize: '8px', color: FIT_COLOR[f.verdict], fontWeight: 600, textAlign: 'center' }}>
-                            {f.label}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Le choix du client est respecté, mais il est informé au cm près */}
-                {fitData && selectedSize && fitOf(selectedSize) && !fitOf(selectedSize).wearable && (
-                  <div style={{ marginTop: '8px', padding: '8px 10px', borderRadius: '8px', background: 'rgba(192,57,43,0.07)', border: '1px solid rgba(192,57,43,0.2)' }}>
-                    <p style={{ margin: 0, fontSize: '11px', color: T.red, fontWeight: 600 }}>
-                      {fitOf(selectedSize).label} — nous recommandons {fitData.recommendedSize}
-                    </p>
-                    {fitOf(selectedSize).zones.filter(z => z.deltaCm !== 0).map(z => (
-                      <p key={z.zone} style={{ margin: '2px 0 0', fontSize: '10px', color: T.muted }}>
-                        {z.zone} : {Math.abs(z.deltaCm)} cm {z.deltaCm > 0 ? 'trop juste' : 'de trop'}
-                      </p>
-                    ))}
-                  </div>
                 )}
               </div>
 
@@ -2165,9 +2165,66 @@ body: JSON.stringify({
                       </button>
                     ))}
                   </div>
-                  {recommendedSize && (
-                    <div style={{ marginTop: '10px', fontSize: '12px', color: '#06D6A0', fontWeight: 500 }}>
-                      ✓ Taille {recommendedSize} recommandée par l'IA
+                  {/* Verdict par taille, sous chaque bouton */}
+                  {fitData && (
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
+                      {sizeOptions.map(s => {
+                        const f = fitOf(s);
+                        return (
+                          <span key={s} style={{ minWidth: '46px', textAlign: 'center', fontSize: '9px', fontWeight: 600, color: f ? FIT_COLOR[f.verdict] : 'transparent' }}>
+                            {f ? f.label : '·'}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Trois états : calcul en cours, résultat, ou mesures manquantes */}
+                  {fitLoading || measuring ? (
+                    <div style={{ marginTop: '12px', fontSize: '12px', color: T.muted }}>
+                      ⏳ Calcul de votre taille idéale…
+                    </div>
+                  ) : fitError ? (
+                    <div style={{ marginTop: '12px', fontSize: '11px', color: T.red, lineHeight: 1.5 }}>
+                      Recommandation de taille indisponible : {fitError}
+                      <br />L'essayage, lui, n'est pas affecté.
+                    </div>
+                  ) : fitData ? (
+                    <div style={{ marginTop: '12px' }}>
+                      <div style={{ fontSize: '13px', color: '#06D6A0', fontWeight: 600 }}>
+                        ✓ Taille {fitData.recommendedSize} recommandée — {fitData.confidence}% de confiance
+                      </div>
+                      <div style={{ fontSize: '11px', color: T.muted, marginTop: '3px' }}>
+                        Calculée sur {fitData.photoUsed ? 'votre photo, votre taille et votre poids' : 'votre taille et votre poids'}
+                        {fitData.measurements && ` · poitrine ${fitData.measurements.chestCm} · taille ${fitData.measurements.waistCm} · hanches ${fitData.measurements.hipCm} cm`}
+                      </div>
+                      {fitData.photoNote && (
+                        <div style={{ fontSize: '11px', color: T.muted, marginTop: '3px' }}>{fitData.photoNote}</div>
+                      )}
+                      {!fitData.photoUsed && (
+                        <div style={{ fontSize: '11px', color: T.muted, marginTop: '3px' }}>
+                          💡 Une photo en pied et de face nous permettrait de mesurer votre carrure au lieu de l'estimer.
+                        </div>
+                      )}
+
+                      {/* Le choix du client est respecté — il est simplement informé au cm près */}
+                      {selectedSize && fitOf(selectedSize) && !fitOf(selectedSize).wearable && (
+                        <div style={{ marginTop: '10px', padding: '10px 12px', borderRadius: '8px', background: 'rgba(192,57,43,0.07)', border: '1px solid rgba(192,57,43,0.2)' }}>
+                          <p style={{ margin: 0, fontSize: '12px', color: T.red, fontWeight: 600 }}>
+                            {fitOf(selectedSize).label} — nous recommandons {fitData.recommendedSize}
+                          </p>
+                          {fitOf(selectedSize).zones.filter(z => z.deltaCm !== 0).map(z => (
+                            <p key={z.zone} style={{ margin: '2px 0 0', fontSize: '11px', color: T.muted }}>
+                              {z.zone} : {Math.abs(z.deltaCm)} cm {z.deltaCm > 0 ? 'trop juste' : 'de trop'}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: '12px', fontSize: '11px', color: T.muted, lineHeight: 1.5 }}>
+                      Renseignez votre taille et votre poids avant l'essayage pour recevoir
+                      une recommandation calculée sur votre morphologie.
                     </div>
                   )}
                 </div>
@@ -2187,6 +2244,27 @@ body: JSON.stringify({
 
                 {/* Actions */}
                 <div className="tryon-action-buttons" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* Retour à la cabine : la photo et les mesures sont conservées,
+                      le client ne ressaisit rien pour changer d'avis. */}
+                  <button
+                    onClick={() => { setAiResult(null); setAiError(null); setStep(1); }}
+                    disabled={aiGenerating}
+                    style={{
+                      width: '100%',
+                      padding: '14px',
+                      borderRadius: '12px',
+                      background: 'transparent',
+                      color: aiGenerating ? T.muted : T.blueDark,
+                      border: `1.5px solid ${aiGenerating ? T.border : T.blueDark}`,
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      letterSpacing: '1.5px',
+                      textTransform: 'uppercase',
+                      cursor: aiGenerating ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    ↻ Refaire l'essayage
+                  </button>
                   <button
                     onClick={handleAddToCart}
                     style={{
