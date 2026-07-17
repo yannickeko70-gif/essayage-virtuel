@@ -40,56 +40,107 @@ const T = {
   border: 'rgba(26,26,26,0.105)',
 };
 
-/* ── Fonctions utilitaires pour les mensurations ── */
+/* ── Mensurations : extraction des ratios morphologiques ── */
 
-/** Extrait les mensurations normalisées à partir des landmarks */
-function getMeasurements(landmarks) {
-  if (!landmarks || !landmarks[0] || !landmarks[27] || !landmarks[28] ||
-      !landmarks[11] || !landmarks[12] || !landmarks[23] || !landmarks[24]) {
-    return null;
-  }
+const LM = {
+  NOSE: 0,
+  L_SHOULDER: 11,
+  R_SHOULDER: 12,
+  L_HIP: 23,
+  R_HIP: 24,
+  L_ANKLE: 27,
+  R_ANKLE: 28,
+};
+const REQUIRED_LM = Object.values(LM);
 
-  const noseY = landmarks[0].y;
-  const leftAnkleY = landmarks[27].y;
-  const rightAnkleY = landmarks[28].y;
-  const ankleY = (leftAnkleY + rightAnkleY) / 2;
-  const heightNorm = ankleY - noseY; // doit être positif
+/**
+ * Hauteur nez → chevilles, exprimée en fraction de la stature debout.
+ * Le nez se situe vers 0,925 H et la cheville (malléole) vers 0,045 H :
+ * l'écart couvre donc ~0,88 H. Sans cette correction, on prendrait la
+ * distance nez-chevilles pour la taille entière et tous les ratios
+ * seraient surestimés d'environ 14 %.
+ */
+const NOSE_TO_ANKLE_FRACTION = 0.88;
 
-  if (heightNorm <= 0) return null;
+const dist3 = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
-  const shoulderWidthNorm = Math.abs(landmarks[12].x - landmarks[11].x);
-  const hipWidthNorm = Math.abs(landmarks[24].x - landmarks[23].x);
+/**
+ * Extrait les ratios morphologiques sans unité à partir des landmarks 3D.
+ *
+ * Pourquoi poseWorldLandmarks et pas poseLandmarks :
+ *  - poseLandmarks normalise x par la LARGEUR de l'image et y par sa
+ *    HAUTEUR. Le rapport largeur_épaules / hauteur_corps y dépend donc du
+ *    format de la photo (3:4, 9:16…) et non du corps. C'est inexploitable.
+ *  - poseWorldLandmarks donne des coordonnées 3D métriques, origine au
+ *    centre du bassin. On peut y mesurer une vraie distance entre deux
+ *    points, même si le buste est légèrement tourné (on utilise z).
+ *
+ * L'échelle absolue de ces mètres est estimée par le modèle et donc peu
+ * fiable — mais on divise deux longueurs issues du MÊME repère, donc
+ * l'échelle se simplifie. Ce qui reste est une forme : large ou étroit
+ * POUR sa taille. C'est la taille saisie par le client qui la convertit
+ * en centimètres, côté serveur.
+ *
+ * @returns {{shoulderRatio, hipRatio, quality, rotationDeg, minVisibility}|null}
+ */
+function getBodyRatios(results) {
+  const W = results?.poseWorldLandmarks;
+  const I = results?.poseLandmarks;
+  if (!W || !I) return null;
+  if (REQUIRED_LM.some((i) => !W[i] || !I[i])) return null;
 
-  return { heightNorm, shoulderWidthNorm, hipWidthNorm };
+  // Visibilité : MediaPipe place des points même quand ils sont hors cadre
+  // ou masqués, en les devinant. Un point deviné ne doit pas mesurer un corps.
+  const minVisibility = Math.min(
+    ...REQUIRED_LM.map((i) => (typeof I[i].visibility === 'number' ? I[i].visibility : 0))
+  );
+
+  // Stature estimée : axe vertical uniquement (y croît vers le bas).
+  const ankleY = (W[LM.L_ANKLE].y + W[LM.R_ANKLE].y) / 2;
+  const noseToAnkle = ankleY - W[LM.NOSE].y;
+  if (!(noseToAnkle > 0.5)) return null; // corps assis, allongé ou tronqué
+  const statureM = noseToAnkle / NOSE_TO_ANKLE_FRACTION;
+
+  const shoulderM = dist3(W[LM.L_SHOULDER], W[LM.R_SHOULDER]);
+  const hipM = dist3(W[LM.L_HIP], W[LM.R_HIP]);
+
+  // Rotation du buste : si une épaule est nettement plus proche de
+  // l'objectif que l'autre, l'estimation de z devient hasardeuse.
+  const dz = Math.abs(W[LM.L_SHOULDER].z - W[LM.R_SHOULDER].z);
+  const dx = Math.abs(W[LM.L_SHOULDER].x - W[LM.R_SHOULDER].x);
+  const rotationDeg = (Math.atan2(dz, Math.max(dx, 1e-6)) * 180) / Math.PI;
+
+  let quality = 'good';
+  if (minVisibility < 0.5 || rotationDeg > 35) quality = 'bad';
+  else if (minVisibility < 0.75 || rotationDeg > 20) quality = 'poor';
+
+  return {
+    shoulderRatio: shoulderM / statureM,
+    hipRatio: hipM / statureM,
+    quality,
+    rotationDeg: Math.round(rotationDeg),
+    minVisibility: Math.round(minVisibility * 100) / 100,
+  };
 }
 
-/** Calcule un score de compatibilité (0-100) à partir des mensurations */
+/** Message d'aide affiché quand la photo ne permet pas de lire la morphologie. */
+function photoQualityHint(m) {
+  if (!m) return "Nous n'avons pas pu lire votre morphologie sur cette photo : la recommandation utilisera votre taille et votre poids.";
+  if (m.quality === 'bad' && m.rotationDeg > 35)
+    return 'Placez-vous bien face à l’objectif : votre buste est trop tourné pour mesurer votre carrure.';
+  if (m.quality === 'bad')
+    return 'Cadrez-vous en entier, des pieds à la tête, sur un fond dégagé : la photo ne permet pas de lire votre carrure.';
+  if (m.quality === 'poor')
+    return 'Photo exploitable, mais une prise de vue de face et en pied donnerait une taille plus juste.';
+  return null;
+}
+
+/** Score de compatibilité (0-100) — proportions du client vs. proportions de référence */
 function calculateScoreFromMeasurements(m) {
-  const shoulderToHeight = m.shoulderWidthNorm / m.heightNorm;
-  const hipToHeight = m.hipWidthNorm / m.heightNorm;
-
-  // Valeurs idéales (à ajuster selon des données réelles)
-  const idealShoulderToHeight = 0.20;
-  const idealHipToHeight = 0.18;
-
-  let shoulderScore = 1 - Math.abs(shoulderToHeight - idealShoulderToHeight) / idealShoulderToHeight;
-  let hipScore = 1 - Math.abs(hipToHeight - idealHipToHeight) / idealHipToHeight;
-
-  shoulderScore = Math.max(0, Math.min(1, shoulderScore));
-  hipScore = Math.max(0, Math.min(1, hipScore));
-
+  const clamp01 = (v) => Math.max(0, Math.min(1, v));
+  const shoulderScore = clamp01(1 - Math.abs(m.shoulderRatio - 0.215) / 0.215);
+  const hipScore = clamp01(1 - Math.abs(m.hipRatio - 0.145) / 0.145);
   return Math.round(((shoulderScore + hipScore) / 2) * 100);
-}
-
-/** Recommande une taille (XS à XL) basée sur la largeur des épaules relative */
-function recommendSizeFromMeasurements(m) {
-  const shoulderToHeight = m.shoulderWidthNorm / m.heightNorm;
-  if (shoulderToHeight < 0.15) return 'XS';
-  if (shoulderToHeight < 0.18) return 'S';
-  if (shoulderToHeight < 0.21) return 'M';
-  if (shoulderToHeight < 0.24) return 'L';
-  if (shoulderToHeight < 0.27) return 'XL';
-  return 'XL';
 }
 
 /* ── Composant principal ── */
@@ -127,6 +178,7 @@ const [pageMessage, setPageMessage]   = useState(null); // { type: 'error'|'info
   const [tryonId, setTryonId] = useState(null);
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [measurements, setMeasurements] = useState(null);
+  const [measuring, setMeasuring] = useState(false);
 
 
   // ── Moteur de recommandation de taille ──
@@ -198,6 +250,75 @@ const [pageMessage, setPageMessage]   = useState(null); // { type: 'error'|'info
   }, [productId, navigate, t]);
 
   /* ── 2. Gestion de la photo ── */
+  /**
+   * Mesure la morphologie sur une image, indépendamment de l'essayage IA.
+   *
+   * Pourquoi ici et pas dans le flux CatVTON : la carrure se lit en ~1 s avec
+   * MediaPipe, la génération d'image prend ~30 s et peut échouer. Les deux
+   * n'ont aucune raison d'être couplés — le client doit connaître sa taille
+   * même si le rendu IA tombe en panne.
+   */
+  const measurePhoto = useCallback(async (imageSrc, skipRefresh = false) => {
+    setMeasuring(true);
+    try {
+      const img = new Image();
+      img.src = imageSrc;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = () => reject(new Error('Image illisible'));
+      });
+
+      const pose = new Pose({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+      });
+      pose.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: false, // photo fixe : rien à lisser d'une frame à l'autre
+        minDetectionConfidence: 0.5,
+      });
+
+      let results = null;
+      pose.onResults((r) => {
+        if (r.poseLandmarks) results = r;
+      });
+      await pose.send({ image: img });
+      pose.close(); // libère le runtime WASM : sans ça, chaque photo analysée
+                    // laisse ~40 Mo derrière elle et l'onglet finit par tomber
+
+      if (!results) {
+        setMeasurements(null);
+        setPageMessage({
+          type: 'info',
+          text: "Nous n'avons pas reconnu de personne sur cette photo : la taille sera estimée à partir de votre taille et de votre poids.",
+        });
+        return null;
+      }
+
+      const m = getBodyRatios(results);
+      setMeasurements(m);
+      setPoseLandmarks(results.poseLandmarks);
+
+      const hint = photoQualityHint(m);
+      if (hint) setPageMessage({ type: 'info', text: hint });
+
+      // Si taille et poids sont déjà saisis, on rafraîchit la reco sans
+      // que le client ait à recliquer : la photo vient de tout changer.
+      // Rafraîchissement automatique, uniquement sur le chemin « upload de
+      // fichier ». Quand c'est loadFit qui nous appelle (cas webcam),
+      // skipRefresh évite l'aller-retour infini.
+      if (!skipRefresh && m && m.quality !== 'bad' && heightCm && weightKg) {
+        await loadFit(m);
+      }
+      return m;
+    } catch (err) {
+      setMeasurements(null);
+      return null;
+    } finally {
+      setMeasuring(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [heightCm, weightKg, morphology, product]);
+
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -208,7 +329,12 @@ const [pageMessage, setPageMessage]   = useState(null); // { type: 'error'|'info
     setUseWebcam(false);
     setWebcamActive(false);
     setPoseLandmarks(null);
+    setMeasurements(null);
     setStep(1);
+    // On lit la morphologie tout de suite (~1 s) pour qu'elle soit prête,
+    // mais on NE calcule PAS la taille ici : la reco est produite au
+    // lancement de l'essayage et présentée sur la page de résultats.
+    measurePhoto(previewUrl, true);
   };
 
   /* ── 3. Webcam ── */
@@ -350,9 +476,13 @@ const [pageMessage, setPageMessage]   = useState(null); // { type: 'error'|'info
       minTrackingConfidence: 0.5,
     });
 
+    // On garde l'objet results ENTIER : poseWorldLandmarks (3D métrique) est
+    // indispensable au calcul des ratios, poseLandmarks ne suffit pas.
+    let detectedResults = null;
     let detectedLandmarks = null;
     pose.onResults((results) => {
       if (results.poseLandmarks) {
+        detectedResults = results;
         detectedLandmarks = results.poseLandmarks;
         setPoseLandmarks(results.poseLandmarks);
         drawPoseOnCanvas(results.poseLandmarks);
@@ -375,6 +505,7 @@ const [pageMessage, setPageMessage]   = useState(null); // { type: 'error'|'info
     setTimeout(() => setAnalysisProgress(60), 500);
     setTimeout(() => setAnalysisProgress(100), 1000);
 
+<<<<<<< HEAD
     // Calcul des mensurations, score et taille
     const m = getMeasurements(detectedLandmarks);
     if (!m) {
@@ -385,12 +516,27 @@ const [pageMessage, setPageMessage]   = useState(null); // { type: 'error'|'info
       setStep(1);
       return;
     }
+=======
+    // Ratios morphologiques. Volontairement NON bloquant : une photo peut
+    // très bien servir à l'essayage virtuel sans permettre de mesurer la
+    // carrure. On prévient le client, on ne le renvoie pas à l'étape 1.
+    const m = getBodyRatios(detectedResults);
+>>>>>>> origin/main
     setMeasurements(m);
 
-    const scoreVal = calculateScoreFromMeasurements(m);
+    const hint = photoQualityHint(m);
+    if (hint) setPageMessage({ type: 'info', text: hint });
+
+    const scoreVal = m ? calculateScoreFromMeasurements(m) : null;
     setScore(scoreVal);
-    const sizeVal = recommendSizeFromMeasurements(m);
-    setRecommendedSize(sizeVal);
+
+    // La taille n'est plus devinée ici à partir de la largeur d'épaules :
+    // c'est le moteur du serveur qui décide, à partir des ratios + taille + poids.
+    let sizeVal = recommendedSize;
+    if (heightCm && weightKg) {
+      const fit = await loadFit(m);
+      if (fit) sizeVal = fit.recommendedSize;
+    }
 
     // Sauvegarder l'essai
     await saveTryon(detectedLandmarks, scoreVal, sizeVal);
@@ -512,6 +658,31 @@ const [pageMessage, setPageMessage]   = useState(null); // { type: 'error'|'info
   };
 
 /* ── Génération IA (version corrigée) ── */
+  /**
+   * Chaîne complète de recommandation, exécutée en arrière-plan au lancement.
+   * Renvoie null quand elle ne peut rien produire — sans jamais bloquer
+   * l'essayage : la taille est un plus, pas un péage.
+   */
+  const runSizeEngine = async () => {
+    // Sans taille ni poids, aucune conversion en centimètres n'est possible :
+    // une photo n'a pas d'échelle. On ne montre pas d'erreur, c'est facultatif.
+    if (!heightCm || !weightKg) return null;
+
+    let m = measurements;
+    if (!m) {
+      let src = photoPreview;
+      if (!src && useWebcam && videoRef.current) {
+        const canvas = document.createElement('canvas');
+        canvas.width = videoRef.current.videoWidth || 640;
+        canvas.height = videoRef.current.videoHeight || 480;
+        canvas.getContext('2d').drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        src = canvas.toDataURL('image/jpeg');
+      }
+      if (src) m = await measurePhoto(src, true);
+    }
+    return await loadFit(m); // m peut être null : reco taille + poids seuls
+  };
+
 const handleAITryon = async () => {
   if (!photo && !photoPreview) return;
   if (!product) return;
@@ -521,6 +692,15 @@ const handleAITryon = async () => {
   setAiError(null);
 
   try {
+    // ~1 s contre ~90 s pour CatVTON : on la joue avant, ce qui permet
+    // d'attacher la taille recommandée à l'essai enregistré. Un échec ici
+    // ne doit jamais empêcher la génération de l'image.
+    let fit = null;
+    try {
+      fit = await runSizeEngine();
+    } catch (e) {
+      console.warn('[runSizeEngine]', e);
+    }
     const formData = new FormData();
     formData.append('productId', product.id);
 
@@ -536,8 +716,12 @@ const handleAITryon = async () => {
       formData.append('tryonPhoto', blob, 'photo.jpg');
     }
 
-    if (score)           formData.append('score', String(score));
-    if (recommendedSize) formData.append('recommendedSize', recommendedSize);
+    // `recommendedSize` (l'état) est encore vide à ce stade : on prend la
+    // valeur que le moteur vient de renvoyer, sinon l'essai était enregistré
+    // sans aucune taille.
+    const sizeForRecord = fit?.recommendedSize || recommendedSize;
+    if (score)        formData.append('score', String(score));
+    if (sizeForRecord) formData.append('recommendedSize', sizeForRecord);
 
     // Le token est stocké dans localStorage par AuthContext (pas sessionStorage)
     const token = localStorage.getItem('tryon_token');
@@ -589,6 +773,7 @@ const handleAITryon = async () => {
   const sizeOptions = sizes.length ? sizes : ['XS', 'S', 'M', 'L', 'XL'];
   const colorOptions = colors.length ? colors : ['#1a1410'];
 
+<<<<<<< HEAD
   const stepperItems = [
     { n: 1, label: t('tryon.stepper.step1') },
     { n: 2, label: t('tryon.stepper.step2') },
@@ -600,6 +785,76 @@ const handleAITryon = async () => {
     t('tryon.step2.steps.morphAnalysis'),
     t('tryon.step2.steps.measurements'),
   ];
+=======
+  // ── Moteur de taille : taille + poids + morphologie -> verdict par taille ──
+  // ratiosOverride : permet à analyzePhoto d'appeler loadFit AVANT que le
+  // setState de `measurements` ne soit répercuté (React ne l'applique pas
+  // de façon synchrone — sans cela le premier calcul ignorerait la photo).
+  const loadFit = async (ratiosOverride) => {
+    if (!heightCm || !weightKg) {
+      setFitError('Renseignez votre taille et votre poids.');
+      return null;
+    }
+
+    let m = ratiosOverride !== undefined ? ratiosOverride : measurements;
+
+    // measurePhoto est déclenchée à l'upload d'un fichier ; la webcam, elle,
+    // n'a pas d'upload. Sans ce filet, un client qui se photographie en
+    // direct reçoit une reco sans sa photo, sans jamais en être informé.
+    if (!m && useWebcam && videoRef.current) {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoRef.current.videoWidth || 640;
+      canvas.height = videoRef.current.videoHeight || 480;
+      canvas.getContext('2d').drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      m = await measurePhoto(canvas.toDataURL('image/jpeg'), true);
+    }
+    setFitLoading(true);
+    setFitError(null);
+    try {
+      const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
+      const res = await fetch(`${BASE_URL}/measurements/fit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+body: JSON.stringify({
+          heightCm: Number(heightCm),
+          weightKg: Number(weightKg),
+          morphology,
+          productId: product?.id,
+          // Ratios 3D mesurés par MediaPipe sur la photo (sans unité).
+          // Convertis en cm côté serveur grâce à la taille saisie.
+          // Absents si aucune photo n'a été analysée : le serveur retombe
+          // alors proprement sur l'estimation taille + poids.
+          shoulderRatio: m?.shoulderRatio,
+          hipRatio: m?.hipRatio,
+          photoQuality: m?.quality,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || json.success === false) throw new Error(json.message || 'Erreur');
+
+      setFitData(json.data);
+      setRecommendedSize(json.data.recommendedSize);
+      if (!selectedSize) setSelectedSize(json.data.recommendedSize);
+      return json.data;
+    } catch (e) {
+      setFitError(e.message);
+      return null;
+    } finally {
+      setFitLoading(false);
+    }
+  };
+
+  const fitOf = (size) => fitData?.sizes?.find((x) => x.size === size);
+
+  const FIT_COLOR = {
+    ajuste: '#06D6A0',
+    serre: '#E8A33D',
+    ample: '#E8A33D',
+    tres_serre: '#C0392B',
+    tres_ample: '#C0392B',
+  };
+>>>>>>> origin/main
 
   return (
     <div
@@ -1551,7 +1806,8 @@ const handleAITryon = async () => {
                   <span>{t('tryon.step1.sizeTitle')}</span>
                   <span style={{ fontSize: '10px', color: T.blueDark, textTransform: 'none', letterSpacing: 0, cursor: 'pointer', fontWeight: 500 }}>{t('tryon.step1.sizeGuideLink')}</span>
                 </div>
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
                   {sizeOptions.map(s => (
                     <button
                       key={s}
@@ -1571,6 +1827,41 @@ const handleAITryon = async () => {
                     </button>
                   ))}
                 </div>
+
+                {/* Mesures : facultatives, mais c'est ce qui rend la reco possible */}
+                <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: T.muted, marginBottom: '8px' }}>
+                  Vos mesures — facultatif
+                </div>
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                  <input type="number" placeholder="Taille (cm)" value={heightCm}
+                    onChange={(e) => setHeightCm(e.target.value)}
+                    style={{ flex: '1 1 90px', minWidth: 0, padding: '7px 9px', borderRadius: '8px', border: `1.5px solid ${T.border}`, fontSize: '12px' }} />
+                  <input type="number" placeholder="Poids (kg)" value={weightKg}
+                    onChange={(e) => setWeightKg(e.target.value)}
+                    style={{ flex: '1 1 90px', minWidth: 0, padding: '7px 9px', borderRadius: '8px', border: `1.5px solid ${T.border}`, fontSize: '12px' }} />
+                  <select value={morphology} onChange={(e) => setMorphology(e.target.value)}
+                    style={{ flex: '1 1 110px', minWidth: 0, padding: '7px 9px', borderRadius: '8px', border: `1.5px solid ${T.border}`, fontSize: '12px' }}>
+                    <option value="mince">Mince</option>
+                    <option value="normale">Normale</option>
+                    <option value="corpulent">Corpulent</option>
+                  </select>
+                </div>
+
+                {/* Ce que le client gagne à remplir, et où il verra le résultat */}
+                {heightCm && weightKg ? (
+                  <p style={{ fontSize: '11px', color: '#06D6A0', margin: 0, lineHeight: 1.4, fontWeight: 500 }}>
+                    ✓ Votre taille idéale sera calculée pendant l'essayage
+                    {measurements && measurements.quality !== 'bad'
+                      ? ' à partir de votre carrure mesurée sur la photo.'
+                      : ' à partir de votre taille et de votre poids.'}
+                  </p>
+                ) : (
+                  <p style={{ fontSize: '11px', color: T.muted, margin: 0, lineHeight: 1.4 }}>
+                    💡 Facultatif — mais sans votre taille et votre poids, nous ne pouvons
+                    pas convertir votre morphologie en centimètres. Renseignez-les et nous
+                    vous dirons quelle taille choisir, avec le résultat de l'essayage.
+                  </p>
+                )}
               </div>
 
               {/* Couleur */}
@@ -1899,9 +2190,72 @@ const handleAITryon = async () => {
                       </button>
                     ))}
                   </div>
+<<<<<<< HEAD
                   {recommendedSize && (
                     <div style={{ marginTop: '10px', fontSize: '12px', color: '#06D6A0', fontWeight: 500 }}>
                       ✓ {t('tryon.step3.recommendedByAI', { size: recommendedSize })}
+=======
+                  {/* Verdict par taille, sous chaque bouton */}
+                  {fitData && (
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
+                      {sizeOptions.map(s => {
+                        const f = fitOf(s);
+                        return (
+                          <span key={s} style={{ minWidth: '46px', textAlign: 'center', fontSize: '9px', fontWeight: 600, color: f ? FIT_COLOR[f.verdict] : 'transparent' }}>
+                            {f ? f.label : '·'}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Trois états : calcul en cours, résultat, ou mesures manquantes */}
+                  {fitLoading || measuring ? (
+                    <div style={{ marginTop: '12px', fontSize: '12px', color: T.muted }}>
+                      ⏳ Calcul de votre taille idéale…
+                    </div>
+                  ) : fitError ? (
+                    <div style={{ marginTop: '12px', fontSize: '11px', color: T.red, lineHeight: 1.5 }}>
+                      Recommandation de taille indisponible : {fitError}
+                      <br />L'essayage, lui, n'est pas affecté.
+                    </div>
+                  ) : fitData ? (
+                    <div style={{ marginTop: '12px' }}>
+                      <div style={{ fontSize: '13px', color: '#06D6A0', fontWeight: 600 }}>
+                        ✓ Taille {fitData.recommendedSize} recommandée — {fitData.confidence}% de confiance
+                      </div>
+                      <div style={{ fontSize: '11px', color: T.muted, marginTop: '3px' }}>
+                        Calculée sur {fitData.photoUsed ? 'votre photo, votre taille et votre poids' : 'votre taille et votre poids'}
+                        {fitData.measurements && ` · poitrine ${fitData.measurements.chestCm} · taille ${fitData.measurements.waistCm} · hanches ${fitData.measurements.hipCm} cm`}
+                      </div>
+                      {fitData.photoNote && (
+                        <div style={{ fontSize: '11px', color: T.muted, marginTop: '3px' }}>{fitData.photoNote}</div>
+                      )}
+                      {!fitData.photoUsed && (
+                        <div style={{ fontSize: '11px', color: T.muted, marginTop: '3px' }}>
+                          💡 Une photo en pied et de face nous permettrait de mesurer votre carrure au lieu de l'estimer.
+                        </div>
+                      )}
+
+                      {/* Le choix du client est respecté — il est simplement informé au cm près */}
+                      {selectedSize && fitOf(selectedSize) && !fitOf(selectedSize).wearable && (
+                        <div style={{ marginTop: '10px', padding: '10px 12px', borderRadius: '8px', background: 'rgba(192,57,43,0.07)', border: '1px solid rgba(192,57,43,0.2)' }}>
+                          <p style={{ margin: 0, fontSize: '12px', color: T.red, fontWeight: 600 }}>
+                            {fitOf(selectedSize).label} — nous recommandons {fitData.recommendedSize}
+                          </p>
+                          {fitOf(selectedSize).zones.filter(z => z.deltaCm !== 0).map(z => (
+                            <p key={z.zone} style={{ margin: '2px 0 0', fontSize: '11px', color: T.muted }}>
+                              {z.zone} : {Math.abs(z.deltaCm)} cm {z.deltaCm > 0 ? 'trop juste' : 'de trop'}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: '12px', fontSize: '11px', color: T.muted, lineHeight: 1.5 }}>
+                      Renseignez votre taille et votre poids avant l'essayage pour recevoir
+                      une recommandation calculée sur votre morphologie.
+>>>>>>> origin/main
                     </div>
                   )}
                 </div>
@@ -1921,6 +2275,27 @@ const handleAITryon = async () => {
 
                 {/* Actions */}
                 <div className="tryon-action-buttons" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* Retour à la cabine : la photo et les mesures sont conservées,
+                      le client ne ressaisit rien pour changer d'avis. */}
+                  <button
+                    onClick={() => { setAiResult(null); setAiError(null); setStep(1); }}
+                    disabled={aiGenerating}
+                    style={{
+                      width: '100%',
+                      padding: '14px',
+                      borderRadius: '12px',
+                      background: 'transparent',
+                      color: aiGenerating ? T.muted : T.blueDark,
+                      border: `1.5px solid ${aiGenerating ? T.border : T.blueDark}`,
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      letterSpacing: '1.5px',
+                      textTransform: 'uppercase',
+                      cursor: aiGenerating ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    ↻ Refaire l'essayage
+                  </button>
                   <button
                     onClick={handleAddToCart}
                     style={{

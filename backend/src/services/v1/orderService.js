@@ -5,7 +5,20 @@ const productModel = require("../../models/v1/productModel");
 const paymentModel = require("../../models/v1/paymentModel");
 const notificationService = require("./notificationService");
 
-const DELIVERY_FEES = { std: 0, exp: 2000 };
+/**
+ * Livraison : forfait unique de 2 000 FCFA, Douala uniquement.
+ *
+ * Le montant est décidé ICI et jamais accepté depuis le client : un frais de
+ * port modifiable dans le navigateur n'est pas une fonctionnalité, c'est une
+ * faille. Le frontend l'affiche, le serveur le facture.
+ *
+ * ⚠️ Doit rester synchronisé avec DELIVERY_FEE dans frontend/src/pages/
+ * checkout/Checkout.jsx. Le jour où les frais seront zonés par quartier,
+ * c'est cette constante qui devient une table — et l'idéal sera alors que le
+ * frontend lise le montant renvoyé par le serveur au lieu de le recopier.
+ */
+const DELIVERY_FEE_DOUALA = 2000;
+const DELIVERY_FEES = { std: DELIVERY_FEE_DOUALA, exp: DELIVERY_FEE_DOUALA };
 
 function generateOrderNumber() {
   const date   = Date.now().toString().slice(-6);
@@ -14,7 +27,10 @@ function generateOrderNumber() {
 }
 
 async function createOrderFromCart(userId, data) {
-  const cart = await cartModel.findActiveCartByUserId(userId);
+  // findActiveCartByUserId a été renommée findActiveCartByOwner lors du
+  // passage au panier invité : elle prend désormais un propriétaire, compte
+  // OU invité, et non plus un identifiant nu. Cet appel n'avait pas suivi.
+  const cart = await cartModel.findActiveCartByOwner({ userId });
   if (!cart) throw new Error("Aucun panier actif trouvé");
 
   const items = await cartModel.getCartItems(cart.id);
@@ -32,9 +48,11 @@ async function createOrderFromCart(userId, data) {
   try {
     await connection.beginTransaction();
 
+    const orderNumber = generateOrderNumber();
+
     const orderId = await orderModel.createOrder(connection, {
       userId,
-      orderNumber:     generateOrderNumber(),
+      orderNumber,
       total,
       paymentMethod:   data.paymentMethod || "cash_on_delivery",
       paymentStatus:   "pending",
@@ -45,8 +63,10 @@ async function createOrderFromCart(userId, data) {
       deliveryFee,
     });
 
-    const order = await orderModel.getOrderById(orderId, userId);
-    const orderNumber = order?.orderNumber || `#${orderId}`;
+    // On NE relit PAS la commande ici. getOrderById passe par le pool, pas par
+    // `connection` : il ne verrait pas une ligne encore dans la transaction et
+    // renverrait undefined. Le `order?.orderNumber || #id` qui suivait masquait
+    // ce fait. Le numéro, on vient de le générer — inutile d'aller le chercher.
 
     for (const item of items) {
       await orderModel.createOrderItem(connection, {
