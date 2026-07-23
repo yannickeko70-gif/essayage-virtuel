@@ -318,6 +318,7 @@ export default function Checkout() {
     tel: '', adresse: '', ville: DEFAULT_CITY,
     quartier: '', reference: '',
   });
+  const [campayStatut, setCampayStatut] = useState(null); // null | 'attente' | 'echec'
 
   /* ── Guards ── */
   useEffect(() => {
@@ -372,6 +373,33 @@ export default function Checkout() {
     }
   };
 
+
+  const suivrePaiement = (reference, order) => {
+    const debut = Date.now();
+    const timer = setInterval(async () => {
+      if (Date.now() - debut > 120000) {          // 2 minutes maximum
+        clearInterval(timer);
+        setCampayStatut('echec');
+        setSubmitError("Le paiement n'a pas été confirmé à temps.");
+        return;
+      }
+      try {
+        const r = await api.get(`/payments/campay/status/${reference}`);
+        if (r.data.status === 'SUCCESSFUL') {
+          clearInterval(timer);
+          setCampayStatut(null);
+          setOrderResult(order);
+          await loadCart();
+        } else if (r.data.status === 'FAILED') {
+          clearInterval(timer);
+          setCampayStatut('echec');
+          setSubmitError("Le paiement a été refusé ou annulé.");
+        }
+      } catch (e) {
+        // Erreur réseau ponctuelle : on retentera au tour suivant
+      }
+    }, 5000);
+  };
   /* ── Soumission ── */
 
   const placeOrder = async () => {
@@ -395,23 +423,21 @@ export default function Checkout() {
 
       const order = response.data;
 
-      // 2. Si paiement en ligne (Orange ou MTN via Paydunya), on redirige vers Paydunya
+// 2. Paiement mobile : Campay envoie une demande de code PIN sur le téléphone
       if (paymentMethod === 'orange_money' || paymentMethod === 'mtn_mobile_money') {
-        const payRes = await api.post('/payments/paydunya/init', { orderId: order.id });
-        const paymentUrl = payRes.data?.paymentUrl;
-        if (paymentUrl) {
-          // On quitte le site vers la page de paiement sécurisée Paydunya.
-          // On NE recharge PAS le panier avant : ça déclenchait le useEffect
-          // de redirection interne vers /cart et créait un flash/race avec
-          // cette navigation externe. Le panier sera de toute façon marqué
-          // "converted" côté serveur.
-          window.location.href = paymentUrl;
-          return;
-        }
-        // Si pas d'URL (clés Paydunya absentes en dev), on affiche une erreur claire
-        throw new Error(t('checkout.errors.onlinePaymentUnavailable'));
-      }
+        const initRes = await api.post('/payments/campay/init', {
+          orderId: order.id,
+          phone: form.tel,        // numéro déjà saisi à l'étape livraison
+        });
 
+        if (!initRes.data?.reference) {
+          throw new Error(t('checkout.errors.onlinePaymentUnavailable'));
+        }
+
+        setCampayStatut('attente');
+        suivrePaiement(initRes.data.reference, order);
+        return;
+      }
       // 3. Paiement à la livraison : écran de succès classique
       setOrderResult(order);
       await loadCart();
@@ -421,6 +447,21 @@ export default function Checkout() {
       setSubmitting(false);
     }
   };
+
+  if (campayStatut === 'attente') {
+    return (
+      <div style={{ minHeight:'60vh', display:'flex', flexDirection:'column',
+                    alignItems:'center', justifyContent:'center',
+                    textAlign:'center', padding:24 }}>
+        <h2>Validez le paiement sur votre téléphone</h2>
+        <p style={{ maxWidth:420, color:'#666' }}>
+          Une demande vient d'être envoyée au {form.tel}.<br />
+          Saisissez votre code PIN Mobile Money pour confirmer la commande.
+        </p>
+        <p style={{ color:'#999', fontSize:14 }}>Ne fermez pas cette page.</p>
+      </div>
+    );
+  }
 
   /* ── Écran de succès ── */
   if (orderResult) return (

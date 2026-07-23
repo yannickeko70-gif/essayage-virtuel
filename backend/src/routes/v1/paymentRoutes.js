@@ -14,4 +14,8 @@ router.post("/paydunya/init", auth, paymentController.initPaydunya);
 router.post("/paydunya/callback", paymentController.paydunyaCallback);
 router.get("/paydunya/callback", paymentController.paydunyaCallback);
 
+// Campay (paiement mobile direct)
+router.post("/campay/init", auth, paymentController.initCampay);
+router.get("/campay/status/:reference", auth, paymentController.campayStatus);
+
 module.exports = router;
