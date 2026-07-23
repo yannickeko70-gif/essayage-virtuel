@@ -68,6 +68,19 @@ app.get("/", (req, res) => {
   });
 });
 
+// Route de santé : réveille le serveur ET la base de données.
+// Utilisée par le service de surveillance externe (UptimeRobot).
+const pool = require("./config/database");
+
+app.get("/health", async (req, res) => {
+  try {
+    await pool.query("SELECT 1");
+    res.json({ server: "ok", database: "ok" });
+  } catch (err) {
+    console.error("Health check — base injoignable :", err.message);
+    res.status(503).json({ server: "ok", database: "down" });
+  }
+});
 // Toutes les routes v1 (auth, products, orders, payments, etc.) sont montées
 // UNE seule fois ici. L'ancien app.js montait /payments une 2e fois : doublon
 // supprimé (les routes payment sont déjà incluses dans routes/v1/index.js).
