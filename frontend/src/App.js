@@ -100,10 +100,8 @@ function AppLayout() {
       {/* Footer — Desktop uniquement, hors admin */}
       {!isAdminPage && !isMobile && <Footer />}
 
-      {/* Bottom Nav — Mobile uniquement, hors admin et auth */}
+{/* Bottom Nav — Mobile uniquement, hors admin et auth */}
       {isMobile && !isAdminPage && !isAuthPage && <BottomNav />}
-      {isMobile && !isAdminPage && !isAuthPage && <MobileHeader />}
-{isMobile && !isAdminPage && !isAuthPage && <BottomNav />}
     </div>
   );
 }

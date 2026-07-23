@@ -729,7 +729,8 @@ footer {
 
 .mobile-header .mobile-logo {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 24px;
+  white-space: nowrap;   /* empêche le retour à la ligne */
+  font-size: 15px;  
   font-weight: 600;
   letter-spacing: 3px;
   color: #1A1A1A;
