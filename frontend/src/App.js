@@ -84,7 +84,7 @@ function AppLayout() {
 {/* ── Routes protégées client ── */}
 <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
 <Route path="/order-success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
-          <Route path="/cart"          element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/orders"        element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           <Route path="/profile"       element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
@@ -100,10 +100,8 @@ function AppLayout() {
       {/* Footer — Desktop uniquement, hors admin */}
       {!isAdminPage && !isMobile && <Footer />}
 
-      {/* Bottom Nav — Mobile uniquement, hors admin et auth */}
+{/* Bottom Nav — Mobile uniquement, hors admin et auth */}
       {isMobile && !isAdminPage && !isAuthPage && <BottomNav />}
-      {isMobile && !isAdminPage && !isAuthPage && <MobileHeader />}
-{isMobile && !isAdminPage && !isAuthPage && <BottomNav />}
     </div>
   );
 }
