@@ -24,8 +24,8 @@ async function auth(req, res, next) {
       if (maintenanceMode) {
         return res.status(403).json({
           success: false,
-          message: "maintenance_mode",
-          error: "Site en maintenance. Seuls les administrateurs peuvent accéder.",
+          message: "Site en maintenance. Seuls les administrateurs peuvent accéder.",
+          error: "maintenance_mode",
         });
       }
     }
