@@ -1,5 +1,9 @@
 const orderService = require("../../services/v1/orderService");
-
+const order = await orderService.createOrderFromCart(
+  req.user.id,
+  req.body,
+  req.guestId || req.cookies?.guestId || null
+);
 async function createOrder(req, res) {
   try {
     const order = await orderService.createOrderFromCart(

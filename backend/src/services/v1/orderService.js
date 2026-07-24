@@ -26,13 +26,15 @@ function generateOrderNumber() {
   return `TRY-${date}-${random}`;
 }
 
-async function createOrderFromCart(userId, data) {
-  // findActiveCartByUserId a été renommée findActiveCartByOwner lors du
-  // passage au panier invité : elle prend désormais un propriétaire, compte
-  // OU invité, et non plus un identifiant nu. Cet appel n'avait pas suivi.
-  const cart = await cartModel.findActiveCartByOwner({ userId });
-  if (!cart) throw new Error("Aucun panier actif trouvé");
+async function createOrderFromCart(userId, data, guestId = null) {
+  let cart = await cartModel.findActiveCartByOwner({ userId });
 
+  // Repli : le panier a pu être constitué en tant qu'invité avant la connexion
+  if (!cart && guestId) {
+    cart = await cartModel.findActiveCartByOwner({ guestId });
+  }
+
+  if (!cart) throw new Error("Aucun panier actif trouvé");
   const items = await cartModel.getCartItems(cart.id);
   if (!items.length) throw new Error("Votre panier est vide");
 
